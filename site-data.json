@@ -1,0 +1,109 @@
+{
+  "settings": {
+    "brand": "amoore",
+    "botUrl": "https://t.me/asoave_bot",
+    "supportUrl": "https://t.me/artemiy_nagov",
+    "accent": "#b08a3e"
+  },
+  "pages": [
+    {
+      "id": "home",
+      "title": "Главная",
+      "blocks": [
+        {
+          "id": "hero",
+          "type": "hero",
+          "eyebrow": "ИИ-ПОМОЩНИК В TELEGRAM",
+          "title": "Знакомьтесь, amoore",
+          "text": "Умный собеседник с характером. Помогает, поддерживает и оживляет ваши Telegram-чаты.",
+          "buttonText": "Открыть в Telegram",
+          "buttonUrl": "https://t.me/asoave_bot",
+          "background": "#101e3a"
+        },
+        {
+          "id": "intro",
+          "type": "text",
+          "eyebrow": "ЗНАКОМСТВО",
+          "title": "Больше, чем просто бот",
+          "text": "amoore живёт в Telegram и пишет как живой человек: шутит, поддерживает и помнит, что вы любите.",
+          "align": "center"
+        },
+        {
+          "id": "features",
+          "type": "cards",
+          "eyebrow": "ВОЗМОЖНОСТИ",
+          "title": "Что умеет amoore",
+          "columns": 2,
+          "cards": [
+            {
+              "title": "Живое общение",
+              "text": "Отвечает с юмором и характером."
+            },
+            {
+              "title": "Игры и РП-команды",
+              "text": "Дуэли, рулетка и ролевые действия."
+            },
+            {
+              "title": "Порядок в группе",
+              "text": "Антифлуд и инструменты управления."
+            },
+            {
+              "title": "Полезные мелочи",
+              "text": "Погода, выбор из вариантов и другое."
+            }
+          ]
+        },
+        {
+          "id": "news",
+          "type": "news",
+          "eyebrow": "ОБНОВЛЕНИЯ",
+          "title": "Что нового",
+          "text": ""
+        },
+        {
+          "id": "start",
+          "type": "steps",
+          "eyebrow": "НАЧАЛО РАБОТЫ",
+          "title": "Как начать",
+          "steps": [
+            "Откройте amoore в Telegram.",
+            "Нажмите «Запустить» или отправьте /start.",
+            "Добавьте бота в группу и настройте права."
+          ],
+          "buttonText": "Перейти к amoore",
+          "buttonUrl": "https://t.me/asoave_bot"
+        },
+        {
+          "id": "cta",
+          "type": "cta",
+          "title": "Попробуйте amoore",
+          "text": "Откройте Telegram и начните общение.",
+          "buttonText": "Написать amoore",
+          "buttonUrl": "https://t.me/asoave_bot"
+        },
+        {
+          "id": "rac4kyu",
+          "type": "hero",
+          "eyebrow": "НОВЫЙ РАЗДЕЛ",
+          "title": "Заголовок сайта",
+          "text": "Короткое описание.",
+          "paddingTop": 80,
+          "paddingBottom": 80,
+          "buttonText": "Открыть",
+          "buttonUrl": "https://t.me/asoave_bot",
+          "background": "#101e3a"
+        },
+        {
+          "id": "duebu16",
+          "type": "text",
+          "eyebrow": "НОВЫЙ РАЗДЕЛ",
+          "title": "Новый блок",
+          "text": "Добавьте сюда свой текст.",
+          "paddingTop": 80,
+          "paddingBottom": 80
+        }
+      ]
+    }
+  ],
+  "news": []
+}
