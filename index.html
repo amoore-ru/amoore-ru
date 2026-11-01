@@ -2,11 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
   <title>amoore — ИИ-подруга в Telegram</title>
   <meta name="description" content="amoore — тёплый ИИ-бот в Telegram: болтает, помогает, ведёт игры и наводит порядок в группах.">
-  <meta name="theme-color" content="#0f0e17">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐳</text></svg>">
+  <meta name="theme-color" content="#070b16" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f3f1f8" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta property="og:title" content="amoore — ИИ-подруга в Telegram">
+  <meta property="og:description" content="Тёплая ИИ-подруга: общение, игры, модерация чатов.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://amoore-ru.github.io/">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%070b16'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='800' font-size='28' fill='%23c9a84b'%3Ea.%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,10 +27,13 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="page-loader" id="page-loader" aria-hidden="true"><div class="page-loader-mark">a.</div></div>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status"></div>
 
   <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему">🌙</button>
 
-  <!-- Top bar -->
   <header class="topbar">
     <div class="topbar-inner">
       <a href="/" class="brand" aria-label="amoore">
@@ -33,19 +44,38 @@
         </span>
       </a>
 
-      <nav class="nav-links">
+      <nav class="nav-links" id="nav-links">
+        <a href="#chat">Диалог</a>
         <a href="#ecosystem">Экосистема</a>
         <a href="#features">Возможности</a>
+        <a href="#commands">Команды</a>
         <a href="#news">Новости</a>
+        <a href="#faq">FAQ</a>
         <a href="#start">Начать</a>
       </nav>
 
       <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
+  <nav class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <a href="#chat">Диалог</a>
+    <a href="#ecosystem">Экосистема</a>
+    <a href="#features">Возможности</a>
+    <a href="#commands">Команды</a>
+    <a href="#news">Новости</a>
+    <a href="#faq">FAQ</a>
+    <a href="#start">Начать</a>
+    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+  </nav>
+
   <!-- Hero -->
   <section class="hero">
+    <div class="hero-ornaments" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="hero-grid">
       <div>
         <div class="hero-badge">ИИ-подруга в Telegram</div>
@@ -83,15 +113,79 @@
           <p>Единое пространство для общения, помощи и порядка в ваших чатах.</p>
         </div>
         <div class="hero-card-footer">
-          <span style="font-size:13px;color:rgba(255,255,255,.5)">@asoave_bot</span>
+          <span class="hero-card-handle">@asoave_bot</span>
           <div class="hero-card-mark">a.</div>
         </div>
       </aside>
     </div>
   </section>
 
+  <!-- Interactive demo chat -->
+  <section class="section reveal" id="chat">
+    <div class="section-index" aria-hidden="true">01</div>
+    <div class="section-label">Диалог</div>
+    <h2>Попробуйте amoore здесь</h2>
+    <p class="section-lead">
+      Короткое демо на сайте. Полный бот с памятью и группами — в Telegram.
+    </p>
+
+    <div class="live-chat glass-card" id="live-chat">
+      <div class="live-chat-head">
+        <div class="live-chat-avatar">a.</div>
+        <div>
+          <strong>amoore</strong>
+          <span>демо · не полный бот</span>
+        </div>
+        <a class="live-chat-tg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">В Telegram</a>
+      </div>
+
+      <div class="live-chat-log" id="chat-log" role="log" aria-live="polite"></div>
+
+      <div class="live-chat-suggestions" id="chat-suggestions"></div>
+
+      <form class="live-chat-form" id="chat-form" autocomplete="off">
+        <input
+          type="text"
+          id="chat-input"
+          maxlength="200"
+          placeholder="Напишите что-нибудь…"
+          aria-label="Сообщение"
+        >
+        <button type="submit" class="btn btn-primary" id="chat-send">Отправить</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Social proof -->
+  <section class="section reveal" id="voices">
+    <div class="section-index" aria-hidden="true">02</div>
+    <div class="section-label">Отзывы</div>
+    <h2>Что говорят</h2>
+    <p class="section-lead">Несколько коротких впечатлений от тех, кто уже пишет amoore.</p>
+
+    <div class="voices-grid">
+      <blockquote class="voice-card glass-card reveal">
+        <p>«Наконец бот, с которым не стыдно просто поболтать вечером. Не робот, а тёплая компания.»</p>
+        <div class="mobile-cta" id="mobile-cta">
+    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+  </div>
+
+  <footer>— @mira</footer>
+      </blockquote>
+      <blockquote class="voice-card glass-card reveal reveal-delay-1">
+        <p>«Поставили в группу — модерация без истерик, игры поднимают чат. Спокойно и по делу.»</p>
+        <footer>— админ @nightcrew</footer>
+      </blockquote>
+      <blockquote class="voice-card glass-card reveal reveal-delay-2">
+        <p>«Отвечает живо, помнит контекст. Не ощущение «нейросети», а как будто подруга онлайн.»</p>
+        <footer>— @leo</footer>
+      </blockquote>
+    </div>
+  </section>
+
   <!-- Ecosystem -->
-  <section class="section" id="ecosystem">
+  <section class="section reveal" id="ecosystem">
+    <div class="section-index" aria-hidden="true">03</div>
     <div class="section-label">Экосистема</div>
     <h2>Знакомьтесь с amoore</h2>
     <p class="section-lead">
@@ -99,91 +193,151 @@
     </p>
 
     <div class="eco-grid">
-      <article class="eco-card">
+      <article class="eco-card glass-card reveal">
         <div class="eco-card-icon">✦</div>
         <h3>amoore AI</h3>
         <p>Искусственный интеллект в Telegram — тёплая подруга, которая болтает, помогает и следит за чатом.</p>
+        <a class="eco-link" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть бота →</a>
       </article>
-      <article class="eco-card">
+      <article class="eco-card glass-card reveal reveal-delay-1">
         <div class="eco-card-icon">◇</div>
         <h3>amoore Studio</h3>
-        <p>Студия для создания и редактирования своего сайта. Единое рабочее пространство для ваших проектов.</p>
+        <p>Студия для создания и редактирования сайта. Единое рабочее пространство для ваших проектов.</p>
+        <a class="eco-link" href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">Открыть студию →</a>
       </article>
     </div>
   </section>
 
   <!-- Features -->
-  <section class="section" id="features">
+  <section class="section reveal" id="features">
+    <div class="section-index" aria-hidden="true">04</div>
     <div class="section-label">Возможности</div>
     <h2>Что умеет amoore</h2>
     <p class="section-lead">
-      От живого общения до модерации групп — всё, что нужно для уютного чата.
+      Не просто чат-бот — компаньон для личных переписок и групп.
     </p>
 
     <div class="feat-grid">
-      <article class="feat-card">
-        <span class="feat-num">01</span>
+      <article class="feat-card glass-card reveal">
+        <div class="feat-num">01</div>
         <div>
           <h3>Живое общение</h3>
-          <p>Отвечает по-человечески, с юмором и характером. Характер можно настроить под себя.</p>
+          <p>Тёплый тон, память контекста и характер. Можно просто писать как другу.</p>
         </div>
       </article>
-      <article class="feat-card">
-        <span class="feat-num">02</span>
+      <article class="feat-card glass-card reveal reveal-delay-1">
+        <div class="feat-num">02</div>
         <div>
-          <h3>Игры и РП-команды</h3>
-          <p>Дуэли, рулетка, «подбрось монетку» и десятки других интересных игр с ИИ.</p>
+          <h3>Игры и РП</h3>
+          <p>Мини-игры и ролевые команды, чтобы оживить чат и поднять настроение.</p>
         </div>
       </article>
-      <article class="feat-card">
-        <span class="feat-num">03</span>
+      <article class="feat-card glass-card reveal reveal-delay-2">
+        <div class="feat-num">03</div>
         <div>
-          <h3>Модератор чата</h3>
-          <p>Антифлуд, запрет ссылок, проверка новичков, ночной режим и чистка чата командой «-смс 20».</p>
+          <h3>Модерация</h3>
+          <p>Помощь с порядком в группах: предупреждения, фильтры, спокойный контроль.</p>
         </div>
       </article>
-      <article class="feat-card">
-        <span class="feat-num">04</span>
+      <article class="feat-card glass-card reveal reveal-delay-3">
+        <div class="feat-num">04</div>
         <div>
           <h3>Полезные мелочи</h3>
-          <p>Погода по городу, выбор из вариантов, совместимость пар, рассылки для владельца.</p>
+          <p>Подсказки, напоминания и мелкие сервисы — без лишней сложности.</p>
         </div>
       </article>
+    </div>
+  </section>
+
+  <!-- Commands -->
+  <section class="section reveal" id="commands">
+    <div class="section-index" aria-hidden="true">05</div>
+    <div class="section-label">Команды</div>
+    <h2>С чего начать писать</h2>
+    <p class="section-lead">Несколько точек входа — остальное подскажет сама.</p>
+
+    <div class="cmd-grid">
+      <button type="button" class="cmd-card glass-card reveal" data-copy="/start">
+        <code>/start <span class="copy-hint">скопировать</span></code>
+        <span>Знакомство и первое сообщение</span>
+      </button>
+      <button type="button" class="cmd-card glass-card reveal reveal-delay-1" data-copy="/help">
+        <code>/help <span class="copy-hint">скопировать</span></code>
+        <span>Список возможностей и подсказки</span>
+      </button>
+      <button type="button" class="cmd-card glass-card reveal reveal-delay-2" data-copy="привет">
+        <code>просто текст <span class="copy-hint">скопировать</span></code>
+        <span>Обычный разговор без команд</span>
+      </button>
+      <button type="button" class="cmd-card glass-card reveal reveal-delay-3" data-copy="давай поиграем">
+        <code>игры · рп <span class="copy-hint">скопировать</span></code>
+        <span>Мини-игры и ролевые сцены</span>
+      </button>
     </div>
   </section>
 
   <!-- News -->
-  <section class="section" id="news">
-    <div class="section-label">Обновления</div>
+  <section class="section reveal" id="news">
+    <div class="section-index" aria-hidden="true">06</div>
+    <div class="section-label">Новости</div>
     <h2>Что нового</h2>
-    <p class="section-lead">Новости, патчи и то, что скоро появится.</p>
+    <p class="section-lead">Обновления, патчи и планы.</p>
 
     <div class="tabs" role="tablist">
-      <button class="tab" aria-pressed="true" data-filter="all" type="button">Все</button>
-      <button class="tab" aria-pressed="false" data-filter="news" type="button">Новости</button>
-      <button class="tab" aria-pressed="false" data-filter="patch" type="button">Патчи</button>
-      <button class="tab" aria-pressed="false" data-filter="soon" type="button">Скоро</button>
+      <button class="tab" data-filter="all" aria-pressed="true">Все</button>
+      <button class="tab" data-filter="news" aria-pressed="false">Новости</button>
+      <button class="tab" data-filter="patch" aria-pressed="false">Патчи</button>
+      <button class="tab" data-filter="soon" aria-pressed="false">Скоро</button>
     </div>
+    <div class="news-list" id="news-list"></div>
+  </section>
 
-    <div class="news-list" id="news-list">
-      <!-- заполняется из news.js -->
+  <!-- FAQ -->
+  <section class="section reveal" id="faq">
+    <div class="section-index" aria-hidden="true">07</div>
+    <div class="section-label">FAQ</div>
+    <h2>Частые вопросы</h2>
+    <p class="section-lead">Коротко о главном.</p>
+
+    <div class="faq-list">
+      <details class="faq-item glass-card">
+        <summary>Это бесплатно?</summary>
+        <p>Да. Основное общение с amoore доступно бесплатно. Отдельные возможности могут появиться позже — об этом всегда предупредим.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary>Можно добавить в группу?</summary>
+        <p>Да. Назначьте бота администратором и напишите <code>/help</code> — дальше подскажет сама.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary>Как настроить характер?</summary>
+        <p>Пишите свободно. amoore подстраивается под тон разговора. Дополнительные настройки характера развиваются вместе с ботом.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary>Безопасно ли это?</summary>
+        <p>Переписка идёт через Telegram. Мы не просим пароли и доступы. Не делитесь чувствительными данными в чате — как и с любым собеседником.</p>
+      </details>
+      <details class="faq-item glass-card">
+        <summary>Чем отличается от других ботов?</summary>
+        <p>Упор на тёплый тон и живое общение, а не на «умные ответы». Плюс игры, РП и спокойная модерация в одном месте.</p>
+      </details>
     </div>
   </section>
 
-  <!-- How to start -->
-  <section class="section" id="start">
+  <!-- Start -->
+  <section class="section reveal" id="start">
+    <div class="section-index" aria-hidden="true">08</div>
     <div class="section-label">Старт</div>
     <h2>Как начать</h2>
     <p class="section-lead">Три простых шага — и amoore уже в вашем чате.</p>
 
     <ol class="steps">
-      <li>Нажмите кнопку или наведите камеру на QR-код.</li>
-      <li>В Telegram нажмите «Запустить» или отправьте /start.</li>
-      <li>Чтобы добавить в группу, назначьте бота администратором и напишите /help.</li>
+      <li>Нажмите кнопку или наведите камеру на QR-код</li>
+      <li>В Telegram нажмите «Запустить» или отправьте /start</li>
+      <li>Чтобы добавить в группу, назначьте бота администратором и напишите /help</li>
     </ol>
 
-    <div class="qr-box">
-      <img class="code" src="images/qr-code.webp" alt="QR-код бота amoore" width="160" height="160">
+    <div class="qr-box glass-card">
+      <img class="code" src="images/qr-code.webp" width="148" height="148" alt="QR-код @asoave_bot">
       <div>
         <p>Откройте бота в Telegram</p>
         <strong>@asoave_bot</strong>
@@ -193,7 +347,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="cta">
+  <section class="cta reveal">
     <div class="cta-banner">
       <h2>Готовы познакомиться с amoore?</h2>
       <p>Напишите боту — она уже ждёт.</p>
@@ -205,13 +359,16 @@
 
   <footer>
     <p>amoore — ИИ-подруга в Telegram</p>
-    <p><a href="https://t.me/asoave_bot" target="_blank" rel="noopener">@asoave_bot</a></p>
+    <p>
+      <a href="https://t.me/asoave_bot" target="_blank" rel="noopener">@asoave_bot</a>
+      ·
+      <a href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">Studio</a>
+    </p>
   </footer>
 
   <script src="news.js"></script>
   <script>
     (function () {
-      // Theme
       var btn = document.getElementById("theme");
       function curTheme() {
         return document.documentElement.getAttribute("data-theme") ||
@@ -219,6 +376,12 @@
       }
       function paintTheme() {
         btn.textContent = curTheme() === "dark" ? "☀️" : "🌙";
+        try {
+          var color = curTheme() === "dark" ? "#070b16" : "#f3f1f8";
+          document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+            m.setAttribute("content", color);
+          });
+        } catch (e) {}
       }
       btn.onclick = function () {
         var n = curTheme() === "dark" ? "light" : "dark";
@@ -228,7 +391,6 @@
       };
       paintTheme();
 
-      // News
       var labels = { news: "Новость", patch: "Патч", soon: "Скоро" };
       var list = document.getElementById("news-list");
       var filter = "all";
@@ -240,14 +402,14 @@
         });
         if (!data.length) {
           var empty = document.createElement("div");
-          empty.className = "news-item";
+          empty.className = "news-item glass-card";
           empty.innerHTML = "<span>Здесь пока пусто.</span>";
           list.appendChild(empty);
           return;
         }
         data.forEach(function (n) {
           var item = document.createElement("div");
-          item.className = "news-item";
+          item.className = "news-item glass-card";
           var small = document.createElement("small");
           small.textContent = [labels[n.type] || "", n.date || ""].filter(Boolean).join(" · ");
           var title = document.createElement("b");
@@ -270,10 +432,315 @@
           draw();
         });
       });
-
       draw();
+
+      var menuBtn = document.getElementById("menu-toggle");
+      var mobileNav = document.getElementById("mobile-nav");
+      if (menuBtn && mobileNav) {
+        menuBtn.addEventListener("click", function () {
+          var open = mobileNav.classList.toggle("open");
+          menuBtn.classList.toggle("open", open);
+          menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+          mobileNav.setAttribute("aria-hidden", open ? "false" : "true");
+          document.body.style.overflow = open ? "hidden" : "";
+        });
+        mobileNav.querySelectorAll("a").forEach(function (a) {
+          a.addEventListener("click", function () {
+            mobileNav.classList.remove("open");
+            menuBtn.classList.remove("open");
+            menuBtn.setAttribute("aria-expanded", "false");
+            mobileNav.setAttribute("aria-hidden", "true");
+            document.body.style.overflow = "";
+          });
+        });
+      }
+
+      var reveals = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+        reveals.forEach(function (el) { io.observe(el); });
+      } else {
+        reveals.forEach(function (el) { el.classList.add("visible"); });
+      }
+
+      var topbar = document.querySelector(".topbar");
+      var navLinks = document.querySelectorAll("#nav-links a, #mobile-nav a[href^='#']");
+      var sections = [];
+      navLinks.forEach(function (a) {
+        var id = a.getAttribute("href");
+        if (id && id.charAt(0) === "#") {
+          var el = document.querySelector(id);
+          if (el) sections.push({ id: id, el: el, links: [] });
+        }
+      });
+      // unique sections
+      var map = {};
+      sections.forEach(function (s) {
+        if (!map[s.id]) map[s.id] = { id: s.id, el: s.el, links: [] };
+      });
+      navLinks.forEach(function (a) {
+        var id = a.getAttribute("href");
+        if (map[id]) map[id].links.push(a);
+      });
+      sections = Object.keys(map).map(function (k) { return map[k]; });
+
+      function onScroll() {
+        if (topbar) topbar.classList.toggle("scrolled", window.scrollY > 12);
+        var y = window.scrollY + 120;
+        var current = null;
+        sections.forEach(function (s) {
+          if (s.el.offsetTop <= y) current = s;
+        });
+        sections.forEach(function (s) {
+          s.links.forEach(function (l) {
+            l.classList.toggle("active", current && current.id === s.id);
+          });
+        });
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // Demo chat (frontend only)
+      (function initDemoChat() {
+        var log = document.getElementById("chat-log");
+        var form = document.getElementById("chat-form");
+        var input = document.getElementById("chat-input");
+        var suggestions = document.getElementById("chat-suggestions");
+        if (!log || !form || !input) return;
+
+        var turns = 0;
+        var maxTurns = 8;
+
+        var starters = [
+          "Привет",
+          "Как дела?",
+          "Мне тревожно",
+          "Расскажи анекдот",
+          "Что ты умеешь?"
+        ];
+
+        function replyFor(text) {
+          var t = (text || "").toLowerCase().trim();
+          if (!t) return "Я здесь. Напиши что угодно — или выбери подсказку ниже.";
+          if (/прив|здрав|хай|hello|hi\b/.test(t))
+            return "Привет. Рада, что заглянул. Как ты сегодня — честно?";
+          if (/как дела|как ты|что нового/.test(t))
+            return "У меня спокойно. А у тебя? Если тяжело — можно без «норм», я выдержу.";
+          if (/тревог|страшно|паник|волную/.test(t))
+            return "Окей, давай мягко. Ты в безопасности прямо сейчас? Дышим медленнее, я никуда не тороплю.";
+          if (/груст|плохо|вымот|устал|тоск/.test(t))
+            return "Слышу. Ты уже сделал достаточно на сегодня. Хочешь просто посидеть в переписке или разложить, что давит?";
+          if (/анекдот|шутк|смешн|юмор/.test(t))
+            return "Окей, без жести: почему нейросети не ходят в бар? Потому что боятся потерять контекст на третий кружке. …Ладно, слабая. Давай лучше про тебя.";
+          if (/умеешь|что ты|помощ|команд|help/.test(t))
+            return "Здесь — демо: поболтать, поддержать, чуть юмора. В Telegram я ещё играю, модерирую группы и помню длиннее. Могу скинуть ссылку — или просто продолжим тут.";
+          if (/спасибо|благодар/.test(t))
+            return "Всегда пожалуйста. Я рядом, даже когда не пишешь.";
+          if (/пока|до связи|bye|ушёл/.test(t))
+            return "Хорошо. Заходи, когда понадобится. И в Telegram я на месте — @asoave_bot.";
+          if (/telegram|телег|бот/.test(t))
+            return "Полная версия — @asoave_bot. Здесь только характер и тон. Нажми «В Telegram» сверху, если готов продолжить по-настоящему.";
+          if (t.length < 12)
+            return "Можно и короче, и длиннее — как удобно. Я не тороплю.";
+          if (turns >= maxTurns - 1)
+            return "Давай честно: это демо, и я уже немного «по сценарию». В Telegram разговор живее и длиннее. Откроешь бота — или ещё одно сообщение тут?";
+          var generic = [
+            "Поняла тебя. Расскажи чуть подробнее — что для тебя в этом главное?",
+            "Интересно. А как ты сам к этому относишься — не «надо», а по-настоящему?",
+            "Окей. Я с тобой. Можем копнуть глубже или сменить тему, если тяжело.",
+            "Слышу. Иногда достаточно, чтобы кто-то просто не пропал из чата. Я здесь."
+          ];
+          return generic[Math.floor(Math.random() * generic.length)];
+        }
+
+        function addBubble(who, text, typing) {
+          var row = document.createElement("div");
+          row.className = "chat-bubble " + (who === "user" ? "chat-user" : "chat-bot");
+          if (typing) row.classList.add("is-typing");
+          var name = document.createElement("span");
+          name.className = "chat-name";
+          name.textContent = who === "user" ? "вы" : "amoore";
+          var p = document.createElement("p");
+          p.textContent = text;
+          row.appendChild(name);
+          row.appendChild(p);
+          log.appendChild(row);
+          log.scrollTop = log.scrollHeight;
+          return row;
+        }
+
+        function setSuggestions(list) {
+          suggestions.textContent = "";
+          list.forEach(function (label) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "chip";
+            b.textContent = label;
+            b.addEventListener("click", function () {
+              input.value = label;
+              form.requestSubmit();
+            });
+            suggestions.appendChild(b);
+          });
+        }
+
+        function botReply(userText) {
+          var typing = addBubble("bot", "•", true);
+          var dots = 1;
+          var dotTimer = setInterval(function () {
+            dots = dots % 3 + 1;
+            var p = typing.querySelector("p");
+            if (p) p.textContent = "•".repeat(dots);
+          }, 280);
+          var delay = 700 + Math.min(1400, (userText || "").length * 20);
+          setTimeout(function () {
+            clearInterval(dotTimer);
+            typing.remove();
+            addBubble("bot", replyFor(userText), false);
+            if (turns >= maxTurns) {
+              setSuggestions(["Открыть в Telegram"]);
+              suggestions.querySelector("button")?.addEventListener("click", function () {
+                window.open("https://t.me/asoave_bot", "_blank", "noopener");
+              });
+            } else {
+              setSuggestions(["Расскажи ещё", "Мне тревожно", "Что ты умеешь?", "Пока"]);
+            }
+          }, delay);
+        }
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var text = (input.value || "").trim();
+          if (!text) return;
+          if (turns >= maxTurns) {
+            addBubble("bot", "Демо на этом исчерпано. Продолжим в Telegram — там я настоящая.", false);
+            return;
+          }
+          turns += 1;
+          addBubble("user", text, false);
+          input.value = "";
+          botReply(text);
+        });
+
+        // seed
+        addBubble("bot", "Привет. Это короткое демо на сайте. Напиши что угодно — или ткни подсказку.", false);
+        setSuggestions(starters);
+      })();
+
+
+
+      // Soft follow on hero card
+      var heroCard = document.querySelector(".hero-card");
+      if (heroCard && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        var heroZone = document.querySelector(".hero");
+        if (heroZone) {
+          heroZone.addEventListener("mousemove", function (e) {
+            var r = heroZone.getBoundingClientRect();
+            var x = (e.clientX - r.left) / r.width - 0.5;
+            var y = (e.clientY - r.top) / r.height - 0.5;
+            heroCard.style.setProperty("--tx", (x * 10).toFixed(2) + "px");
+            heroCard.style.setProperty("--ty", (y * 8).toFixed(2) + "px");
+          }, { passive: true });
+          heroZone.addEventListener("mouseleave", function () {
+            heroCard.style.setProperty("--tx", "0px");
+            heroCard.style.setProperty("--ty", "0px");
+          });
+        }
+      }
+
+
+      // Page loader
+      window.addEventListener("load", function () {
+        var loader = document.getElementById("page-loader");
+        if (loader) {
+          setTimeout(function () { loader.classList.add("hide"); }, 280);
+        }
+      });
+      // Fallback hide loader
+      setTimeout(function () {
+        var loader = document.getElementById("page-loader");
+        if (loader) loader.classList.add("hide");
+      }, 2200);
+
+      // Scroll progress
+      var bar = document.getElementById("scroll-progress");
+      function updateProgress() {
+        if (!bar) return;
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+        bar.style.width = p.toFixed(2) + "%";
+      }
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      updateProgress();
+
+      // Magnetic primary buttons
+      (function () {
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        document.querySelectorAll(".btn-primary").forEach(function (btn) {
+          btn.addEventListener("mousemove", function (e) {
+            var r = btn.getBoundingClientRect();
+            var x = e.clientX - r.left - r.width / 2;
+            var y = e.clientY - r.top - r.height / 2;
+            btn.style.transform = "translate(" + (x * 0.12) + "px," + (y * 0.16) + "px)";
+          });
+          btn.addEventListener("mouseleave", function () {
+            btn.style.transform = "";
+          });
+        });
+      })();
+
+
+
+      // Mobile sticky CTA
+      (function () {
+        var bar = document.getElementById("mobile-cta");
+        if (!bar) return;
+        function check() {
+          var show = window.innerWidth <= 960 && window.scrollY > 280;
+          bar.classList.toggle("show", show);
+          document.body.classList.toggle("has-mobile-cta", show);
+        }
+        window.addEventListener("scroll", check, { passive: true });
+        window.addEventListener("resize", check, { passive: true });
+        check();
+      })();
+
+      // Toast
+      var toastEl = document.getElementById("toast");
+      var toastTimer;
+      function toast(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1800);
+      }
+
+      // Copy commands
+      document.querySelectorAll("[data-copy]").forEach(function (el) {
+        el.addEventListener("click", function () {
+          var text = el.getAttribute("data-copy") || "";
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {
+              toast("Скопировано: " + text);
+            }).catch(function () {
+              toast(text);
+            });
+          } else {
+            toast(text);
+          }
+        });
+      });
+
     })();
   </script>
 </body>
 </html>
-
