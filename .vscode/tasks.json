@@ -1,0 +1,20 @@
+
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "GitHub: Save and Push",
+      "type": "shell",
+      "command": "git",
+      "args": [
+        "save",
+        "Update"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}
