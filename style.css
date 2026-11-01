@@ -635,9 +635,15 @@ img {
 }
 
 .qr-box img.code {
-  width: 160px;
+  width: 148px;
+  height: 148px;
+  object-fit: contain;
+  border: none;
   border-radius: 12px;
-  border: 1px solid var(--line);
+  background: #fff;
+  box-shadow: none;
+  display: block;
+  flex-shrink: 0;
 }
 
 .qr-box p {
