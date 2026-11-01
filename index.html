@@ -1,111 +1,279 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>amoore — ИИ-подруга в Telegram</title>
-<meta name="description" content="amoore — тёплый ИИ-бот в Telegram: болтает, помогает, ведёт игры и наводит порядок в группах.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><text y=%27.9em%27 font-size=%2790%27>🐳</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
-<script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>amoore — ИИ-подруга в Telegram</title>
+  <meta name="description" content="amoore — тёплый ИИ-бот в Telegram: болтает, помогает, ведёт игры и наводит порядок в группах.">
+  <meta name="theme-color" content="#0f0e17">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐳</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    try {
+      var t = localStorage.getItem("theme");
+      if (t) document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button class="theme" id="theme" type="button" aria-label="Переключить светлую и тёмную тему"></button>
 
-<header class="hero">
- <div class="hero-in">
-  <h1>amoore</h1>
-  <p>Тёплая ИИ-подруга в Telegram. Поболтает, поможет и присмотрит за вашим чатом.</p>
-  <a class="btn" href="https://t.me/asoave_bot">Открыть в Telegram</a>
- </div>
-</header>
+  <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему">🌙</button>
 
-<section id="intro">
- <h2>Знакомьтесь с экосистемой amoore</h2>
- <p style="max-width:56ch;margin:0">amoore это малая экосистема которая пока что развивается и скоро полностью сможет функционировать в разных направлениях, например сейчас у нас есть: amooreAI - искуственный интеллект в телеграмме, также amoore Studio - студия для создания своего сайта и его редактирования</p>
- <div class="duo"><img class="st" style="--r:-4deg" src="images/sticker-hug.webp" alt="Робот обнимает кита" width="344" height="375"></div>
-</section>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="/" class="brand" aria-label="amoore">
+        <span class="brand-mark">a.</span>
+        <span class="brand-text">
+          <strong>amoore</strong>
+          <span>AI companion</span>
+        </span>
+      </a>
 
-<section id="can" class="pad">
- <img class="st corner r" style="--r:6deg" src="images/sticker-laptop.webp" alt="Робот с ноутбуком и кит" width="373" height="369">
- <h2>Что умеет amoore</h2>
- <div class="feat">
-  <div><h3>Живое общение</h3><p>Отвечает по-человечески, с юмором и характером. Характер можно настроить под себя.</p></div>
-  <div><h3>Игры и РП-команды</h3><p>Дуэли, рулетка, «подбрось монетку» и десятки других интересных игр с искусственным интеллектом</p></div>
-  <div><h3>Модератор чата</h3><p>Антифлуд, запрет ссылок, проверка новичков кнопкой, ночной режим и чистка чата командой «-смс 20».</p></div>
-  <div><h3>Полезные мелочи</h3><p>Погода по городу, выбор из вариантов, совместимость пар, рассылки для владельца.</p></div>
- </div>
- <div class="duo" style="justify-content:flex-end"><img class="st" style="--r:-5deg;width:min(40vw,210px)" src="images/sticker-hearts.webp" alt="Робот машет рукой, вокруг сердечки" width="367" height="376"></div>
-</section>
+      <nav class="nav-links">
+        <a href="#ecosystem">Экосистема</a>
+        <a href="#features">Возможности</a>
+        <a href="#news">Новости</a>
+        <a href="#start">Начать</a>
+      </nav>
 
-<section id="news" class="pad">
- <img class="st corner r" style="--r:-6deg" src="images/sticker-sleep.webp" alt="Робот и кит спят" width="377" height="369">
- <h2>Что нового</h2>
- <div class="tabs" id="tabs">
-  <button class="tab" type="button" data-t="all" aria-pressed="true">Все</button>
-  <button class="tab" type="button" data-t="news" aria-pressed="false">Новости</button>
-  <button class="tab" type="button" data-t="patch" aria-pressed="false">Патчи</button>
-  <button class="tab" type="button" data-t="soon" aria-pressed="false">Скоро</button>
- </div>
- <div class="news" id="list"></div>
-</section>
+      <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+    </div>
+  </header>
 
-<section id="start" class="pad">
- <img class="st corner r" style="--r:5deg" src="images/sticker-question.webp" alt="Робот задумался, кит удивлён" width="376" height="417">
- <h2>Как начать</h2>
- <ol class="how">
-  <li>Нажмите кнопку или наведите камеру на QR-код.</li>
-  <li>В Telegram нажмите «Запустить» или отправьте /start.</li>
-  <li>Чтобы добавить в группу, назначьте бота администратором и напишите /help.</li>
- </ol>
- <div class="qr">
-  <img class="code" src="images/qr-code.webp" alt="QR-код бота @asoave_bot" width="200" height="222">
-  <div>
-   <strong>@asoave_bot</strong>
-   <p>Откройте бота в Telegram по коду или по ссылке.</p>
-   <a class="btn" href="https://t.me/asoave_bot">t.me/asoave_bot</a>
-  </div>
-  <img class="st" style="--r:4deg" src="images/sticker-cool.webp" alt="Робот и кит в тёмных очках" width="374" height="394">
- </div>
-</section>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">ИИ-подруга в Telegram</div>
+        <h1>Тёплая <em>amoore</em>,<br>которая всегда рядом</h1>
+        <p class="hero-lead">
+          Поболтает, поможет и присмотрит за вашим чатом.
+          Живое общение, игры, модерация и полезные мелочи — в одном боте.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary btn-lg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
+            Открыть в Telegram
+          </a>
+          <a class="btn btn-ghost btn-lg" href="#features">Что умеет</a>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-meta-item">
+            <strong>24/7</strong>
+            <span>на связи</span>
+          </div>
+          <div class="hero-meta-item">
+            <strong>Игры</strong>
+            <span>и РП-команды</span>
+          </div>
+          <div class="hero-meta-item">
+            <strong>Модерация</strong>
+            <span>чатов</span>
+          </div>
+        </div>
+      </div>
 
-<section class="cta">
- <div class="duo"><img class="st" style="--r:4deg;width:min(58vw,260px)" src="images/sticker-heart.webp" alt="Робот держит светящееся сердце" width="359" height="375"></div>
- <a class="btn" href="https://t.me/asoave_bot">Написать amoore</a>
-</section>
+      <aside class="hero-card" aria-hidden="true">
+        <div>
+          <div class="hero-card-label">amoore AI</div>
+          <h2>Всё начинается<br>с разговора.</h2>
+          <p>Единое пространство для общения, помощи и порядка в ваших чатах.</p>
+        </div>
+        <div class="hero-card-footer">
+          <span style="font-size:13px;color:rgba(255,255,255,.5)">@asoave_bot</span>
+          <div class="hero-card-mark">a.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
 
-<footer><p><a href="https://t.me/artemiy_nagov">Техническая поддержка</a></p>amoore — ИИ-бот. Ответы пишет нейросеть и они могут быть неточными.</footer>
+  <!-- Ecosystem -->
+  <section class="section" id="ecosystem">
+    <div class="section-label">Экосистема</div>
+    <h2>Знакомьтесь с amoore</h2>
+    <p class="section-lead">
+      Небольшая экосистема, которая развивается и скоро сможет работать в разных направлениях.
+    </p>
 
-<script src="news.js"></script>
-<script>
-(function(){
- var r=document.documentElement,b=document.getElementById("theme");
- function cur(){return r.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}
- function paint(){b.textContent=cur()==="dark"?"☀️":"🌙"}
- b.onclick=function(){var n=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}paint()};
- paint();
- var L={news:"Новость",patch:"Патч",soon:"Скоро"},list=document.getElementById("list"),f="all";
- function draw(){
-  list.textContent="";
-  var d=(typeof NEWS!=="undefined"?NEWS:[]).filter(function(n){return f==="all"||n.type===f});
-  if(!d.length){var e=document.createElement("span");e.textContent="Здесь пока пусто.";list.appendChild(e);return}
-  d.forEach(function(n){
-   var i=document.createElement("div");i.className="item";
-   var s=document.createElement("small");s.textContent=[L[n.type]||"",n.date||""].filter(Boolean).join(" · ");
-   var t=document.createElement("b");t.textContent=n.title||"";
-   var x=document.createElement("span");x.textContent=n.text||"";
-   i.appendChild(s);i.appendChild(t);i.appendChild(x);list.appendChild(i);
-  });
- }
- document.getElementById("tabs").addEventListener("click",function(e){
-  var t=e.target.closest(".tab");if(!t)return;f=t.getAttribute("data-t");
-  document.querySelectorAll(".tab").forEach(function(x){x.setAttribute("aria-pressed",x===t)});draw();
- });
- draw();
-})();
-</script>
+    <div class="eco-grid">
+      <article class="eco-card">
+        <div class="eco-card-icon">✦</div>
+        <h3>amoore AI</h3>
+        <p>Искусственный интеллект в Telegram — тёплая подруга, которая болтает, помогает и следит за чатом.</p>
+      </article>
+      <article class="eco-card">
+        <div class="eco-card-icon">◇</div>
+        <h3>amoore Studio</h3>
+        <p>Студия для создания и редактирования своего сайта. Единое рабочее пространство для ваших проектов.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <div class="section-label">Возможности</div>
+    <h2>Что умеет amoore</h2>
+    <p class="section-lead">
+      От живого общения до модерации групп — всё, что нужно для уютного чата.
+    </p>
+
+    <div class="feat-grid">
+      <article class="feat-card">
+        <span class="feat-num">01</span>
+        <div>
+          <h3>Живое общение</h3>
+          <p>Отвечает по-человечески, с юмором и характером. Характер можно настроить под себя.</p>
+        </div>
+      </article>
+      <article class="feat-card">
+        <span class="feat-num">02</span>
+        <div>
+          <h3>Игры и РП-команды</h3>
+          <p>Дуэли, рулетка, «подбрось монетку» и десятки других интересных игр с ИИ.</p>
+        </div>
+      </article>
+      <article class="feat-card">
+        <span class="feat-num">03</span>
+        <div>
+          <h3>Модератор чата</h3>
+          <p>Антифлуд, запрет ссылок, проверка новичков, ночной режим и чистка чата командой «-смс 20».</p>
+        </div>
+      </article>
+      <article class="feat-card">
+        <span class="feat-num">04</span>
+        <div>
+          <h3>Полезные мелочи</h3>
+          <p>Погода по городу, выбор из вариантов, совместимость пар, рассылки для владельца.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- News -->
+  <section class="section" id="news">
+    <div class="section-label">Обновления</div>
+    <h2>Что нового</h2>
+    <p class="section-lead">Новости, патчи и то, что скоро появится.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab" aria-pressed="true" data-filter="all" type="button">Все</button>
+      <button class="tab" aria-pressed="false" data-filter="news" type="button">Новости</button>
+      <button class="tab" aria-pressed="false" data-filter="patch" type="button">Патчи</button>
+      <button class="tab" aria-pressed="false" data-filter="soon" type="button">Скоро</button>
+    </div>
+
+    <div class="news-list" id="news-list">
+      <!-- заполняется из news.js -->
+    </div>
+  </section>
+
+  <!-- How to start -->
+  <section class="section" id="start">
+    <div class="section-label">Старт</div>
+    <h2>Как начать</h2>
+    <p class="section-lead">Три простых шага — и amoore уже в вашем чате.</p>
+
+    <ol class="steps">
+      <li>Нажмите кнопку или наведите камеру на QR-код.</li>
+      <li>В Telegram нажмите «Запустить» или отправьте /start.</li>
+      <li>Чтобы добавить в группу, назначьте бота администратором и напишите /help.</li>
+    </ol>
+
+    <div class="qr-box">
+      <img class="code" src="images/qr-code.webp" alt="QR-код бота amoore" width="160" height="160">
+      <div>
+        <p>Откройте бота в Telegram</p>
+        <strong>@asoave_bot</strong>
+        <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">t.me/asoave_bot</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta-banner">
+      <h2>Готовы познакомиться с amoore?</h2>
+      <p>Напишите боту — она уже ждёт.</p>
+      <a class="btn btn-primary btn-lg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
+        Написать amoore
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <p>amoore — ИИ-подруга в Telegram</p>
+    <p><a href="https://t.me/asoave_bot" target="_blank" rel="noopener">@asoave_bot</a></p>
+  </footer>
+
+  <script src="news.js"></script>
+  <script>
+    (function () {
+      // Theme
+      var btn = document.getElementById("theme");
+      function curTheme() {
+        return document.documentElement.getAttribute("data-theme") ||
+          (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      }
+      function paintTheme() {
+        btn.textContent = curTheme() === "dark" ? "☀️" : "🌙";
+      }
+      btn.onclick = function () {
+        var n = curTheme() === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", n);
+        try { localStorage.setItem("theme", n); } catch (e) {}
+        paintTheme();
+      };
+      paintTheme();
+
+      // News
+      var labels = { news: "Новость", patch: "Патч", soon: "Скоро" };
+      var list = document.getElementById("news-list");
+      var filter = "all";
+
+      function draw() {
+        list.textContent = "";
+        var data = (typeof NEWS !== "undefined" ? NEWS : []).filter(function (n) {
+          return filter === "all" || n.type === filter;
+        });
+        if (!data.length) {
+          var empty = document.createElement("div");
+          empty.className = "news-item";
+          empty.innerHTML = "<span>Здесь пока пусто.</span>";
+          list.appendChild(empty);
+          return;
+        }
+        data.forEach(function (n) {
+          var item = document.createElement("div");
+          item.className = "news-item";
+          var small = document.createElement("small");
+          small.textContent = [labels[n.type] || "", n.date || ""].filter(Boolean).join(" · ");
+          var title = document.createElement("b");
+          title.textContent = n.title || "";
+          var text = document.createElement("span");
+          text.textContent = n.text || "";
+          item.appendChild(small);
+          item.appendChild(title);
+          item.appendChild(text);
+          list.appendChild(item);
+        });
+      }
+
+      document.querySelectorAll(".tab").forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          filter = tab.getAttribute("data-filter") || "all";
+          document.querySelectorAll(".tab").forEach(function (t) {
+            t.setAttribute("aria-pressed", t === tab ? "true" : "false");
+          });
+          draw();
+        });
+      });
+
+      draw();
+    })();
+  </script>
 </body>
 </html>
+
