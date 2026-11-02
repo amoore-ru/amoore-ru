@@ -44,8 +44,6 @@
   <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
   <div class="toast" id="toast" role="status"></div>
 
-  <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему">🌙</button>
-
   <header class="topbar">
     <div class="topbar-inner">
       <a href="/" class="brand" aria-label="amoore">
@@ -66,11 +64,13 @@
         <a href="#start">Начать</a>
       </nav>
 
-      <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
-
-      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Меню" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
+      <div class="header-actions">
+        <a class="btn btn-primary header-tg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+        <button class="theme-btn" id="theme" type="button" aria-label="Переключить тему">🌙</button>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Меню" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -165,33 +165,6 @@
         >
         <button type="submit" class="btn btn-primary" id="chat-send">Отправить</button>
       </form>
-    </div>
-  </section>
-
-  <!-- Social proof -->
-  <section class="section reveal" id="voices">
-    <div class="section-index" aria-hidden="true">02</div>
-    <div class="section-label">Отзывы</div>
-    <h2>Что говорят</h2>
-    <p class="section-lead">Несколько коротких впечатлений от тех, кто уже пишет amoore.</p>
-
-    <div class="voices-grid">
-      <blockquote class="voice-card glass-card reveal">
-        <p>«Наконец бот, с которым не стыдно просто поболтать вечером. Не робот, а тёплая компания.»</p>
-        <div class="mobile-cta" id="mobile-cta">
-    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
-  </div>
-
-  <footer>— @mira</footer>
-      </blockquote>
-      <blockquote class="voice-card glass-card reveal reveal-delay-1">
-        <p>«Поставили в группу — модерация без истерик, игры поднимают чат. Спокойно и по делу.»</p>
-        <footer>— админ @nightcrew</footer>
-      </blockquote>
-      <blockquote class="voice-card glass-card reveal reveal-delay-2">
-        <p>«Отвечает живо, помнит контекст. Не ощущение «нейросети», а как будто подруга онлайн.»</p>
-        <footer>— @leo</footer>
-      </blockquote>
     </div>
   </section>
 
@@ -368,6 +341,10 @@
       </a>
     </div>
   </section>
+
+  <div class="mobile-cta" id="mobile-cta">
+    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
+  </div>
 
   <footer>
     <p>amoore — ИИ-подруга в Telegram</p>

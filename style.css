@@ -232,12 +232,20 @@ code {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Theme */
+/* Header actions: theme + menu + desktop TG */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
 .theme-btn {
-  position: fixed;
-  z-index: 60;
-  top: calc(env(safe-area-inset-top, 0px) + 14px);
-  right: 14px;
+  position: relative;
+  z-index: 1;
+  top: auto;
+  right: auto;
   width: 42px;
   height: 42px;
   border-radius: 12px;
@@ -250,30 +258,47 @@ code {
   cursor: pointer;
   display: grid;
   place-items: center;
+  flex-shrink: 0;
   transition: transform 0.3s var(--ease-spring), border-color 0.2s, box-shadow 0.25s;
 }
 .theme-btn:hover {
-  transform: scale(1.08) rotate(-8deg);
+  transform: scale(1.06) rotate(-6deg);
   border-color: var(--gold);
   box-shadow: 0 0 0 3px var(--gold-soft);
 }
 .theme-btn:active { transform: scale(0.94); }
 
-/* Topbar */
+/* Topbar — glass, almost clear at top, denser on scroll */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: color-mix(in srgb, var(--bg) 78%, transparent);
-  backdrop-filter: blur(18px) saturate(1.3);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 1px 0 var(--gold-line);
+  background: transparent;
+  backdrop-filter: blur(0px) saturate(1);
+  -webkit-backdrop-filter: blur(0px) saturate(1);
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
   padding: 0 20px;
-  transition: box-shadow 0.35s, background 0.35s;
+  transition:
+    background 0.35s var(--ease),
+    backdrop-filter 0.35s var(--ease),
+    -webkit-backdrop-filter 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    box-shadow 0.35s var(--ease);
 }
 .topbar.scrolled {
-  box-shadow: 0 1px 0 var(--gold-line), 0 10px 32px rgba(0,0,0,0.07);
+  background: color-mix(in srgb, var(--bg) 42%, transparent);
+  backdrop-filter: blur(22px) saturate(1.45);
+  -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  border-bottom-color: color-mix(in srgb, var(--line) 55%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--gold-line) 50%, transparent),
+    0 12px 40px rgba(0, 0, 0, 0.12);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar.scrolled {
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+  }
 }
 
 .topbar-inner {
@@ -282,7 +307,7 @@ code {
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
 }
 
@@ -368,6 +393,7 @@ code {
   flex-direction: column;
   gap: 5px;
   padding: 0;
+  flex-shrink: 0;
 }
 .menu-toggle span {
   display: block;
@@ -1226,7 +1252,7 @@ footer p { margin: 0 0 6px; }
   }
   .nav-links { display: none; }
   .menu-toggle { display: flex; }
-  .topbar-inner > .btn-primary { display: none; }
+  .header-tg { display: none; }
   .voices-grid { grid-template-columns: 1fr; gap: 12px; }
   .section-index { right: 16px; top: 40px; font-size: 56px; }
   .mobile-cta { display: block; }
@@ -1237,30 +1263,36 @@ footer p { margin: 0 0 6px; }
 
 @media (max-width: 720px) {
   .eco-grid, .feat-grid, .cmd-grid { grid-template-columns: 1fr; }
-  .hero { padding: 36px 16px 28px; }
-  .section { padding: 48px 16px; }
+  .hero { padding: 28px 16px 24px; }
+  .section { padding: 44px 16px; }
   .cta { padding: 0 16px 48px; }
   .cta-banner { padding: 32px 20px; border-radius: 18px; }
   .topbar { padding: 0 12px; }
-  .topbar-inner { height: 56px; }
+  .topbar-inner {
+    height: 56px;
+    gap: 8px;
+  }
   .brand-text span { display: none; }
   .brand-mark { width: 34px; height: 34px; font-size: 14px; }
-  .theme-btn {
-    top: calc(env(safe-area-inset-top, 0px) + 8px);
-    right: 56px;
+  .header-actions { gap: 6px; }
+  .theme-btn,
+  .menu-toggle {
     width: 40px;
     height: 40px;
   }
-  .menu-toggle { width: 40px; height: 40px; }
   .live-chat { max-width: 100%; border-radius: 18px; }
   .live-chat-log { height: min(320px, 50vh); padding: 14px; }
+  .live-chat-suggestions {
+    gap: 6px;
+    padding: 0 12px 10px;
+  }
   .chip {
-    padding: 10px 14px;
+    padding: 10px 12px;
     font-size: 13px;
     min-height: 40px;
   }
   .tab {
-    padding: 10px 16px;
+    padding: 10px 14px;
     min-height: 40px;
   }
   .faq-item summary {
@@ -1268,71 +1300,118 @@ footer p { margin: 0 0 6px; }
     min-height: 52px;
   }
   .steps li { padding: 14px 16px; }
-  .eco-card, .feat-card, .cmd-card, .voice-card {
-    padding: 20px;
+  .eco-card, .feat-card, .cmd-card {
+    padding: 18px;
   }
   .glass-card:hover {
     transform: translateY(-2px);
   }
   .section-label { margin-bottom: 10px; }
-  .section-lead { margin-bottom: 28px; font-size: 15px; }
+  .section-lead { margin-bottom: 24px; font-size: 15px; }
+  .hero-meta {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .hero-meta-item strong { font-size: 16px; }
+  .hero-meta-item span { font-size: 12px; }
 }
 
 @media (max-width: 480px) {
   .hero-actions {
     flex-direction: column;
     gap: 10px;
+    width: 100%;
   }
   .hero-actions .btn {
     width: 100%;
     min-height: 48px;
+    box-sizing: border-box;
   }
   .hero-meta {
-    gap: 16px 24px;
-    justify-content: flex-start;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
   }
-  .hero-meta-item strong { font-size: 18px; }
+  .hero-meta-item strong { font-size: 15px; }
+  .hero-meta-item span {
+    font-size: 11px;
+    line-height: 1.25;
+  }
   .hero h1 {
-    font-size: clamp(28px, 8.5vw, 34px);
-    margin-bottom: 14px;
+    font-size: clamp(26px, 8vw, 32px);
+    margin-bottom: 12px;
+    word-break: break-word;
   }
-  .hero-lead { font-size: 15px; margin-bottom: 22px; }
-  .hero-badge { margin-bottom: 16px; }
+  .hero-lead { font-size: 15px; margin-bottom: 20px; max-width: none; }
+  .hero-badge {
+    margin-bottom: 14px;
+    max-width: 100%;
+    white-space: normal;
+  }
   .qr-box {
     flex-direction: column;
     text-align: center;
-    padding: 20px 16px;
-    gap: 16px;
+    padding: 18px 14px;
+    gap: 14px;
   }
   .qr-box img.code {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
     margin: 0 auto;
   }
   .live-chat-form {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 8px;
     padding: 12px;
   }
   .live-chat-form input {
-    flex: 1 1 100%;
+    width: 100%;
     min-height: 48px;
-    font-size: 16px; /* prevent iOS zoom */
+    font-size: 16px;
     border-radius: 14px;
+    box-sizing: border-box;
   }
   .live-chat-form .btn {
-    flex: 1 1 100%;
+    width: 100%;
     min-height: 48px;
   }
-  .live-chat-head { padding: 12px; gap: 10px; }
-  .live-chat-tg { padding: 8px 10px; font-size: 11px; }
-  .live-chat-log { height: min(280px, 46vh); }
-  .section h2 { font-size: clamp(24px, 7vw, 30px); }
-  .section-index { opacity: 0.025; font-size: 48px; }
-  .btn-lg { padding: 14px 22px; font-size: 15px; }
-  .cmd-card { min-height: 72px; }
-  footer { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .live-chat-head {
+    padding: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .live-chat-tg {
+    margin-left: 0;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .live-chat-log { height: min(260px, 42vh); }
+  .live-chat-suggestions {
+    max-width: 100%;
+  }
+  .chip {
+    max-width: 100%;
+  }
+  .section h2 { font-size: clamp(22px, 7vw, 28px); }
+  .section-index { opacity: 0.02; font-size: 40px; right: 12px; }
+  .btn-lg { padding: 14px 20px; font-size: 15px; }
+  .cmd-card { min-height: 68px; }
+  .tabs {
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+  }
+  .tab { flex-shrink: 0; }
+  footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  .mobile-nav a {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 360px) {
@@ -1611,10 +1690,8 @@ body {
   padding-right: max(12px, env(safe-area-inset-right, 0px));
 }
 
-.theme-btn {
-  /* already uses safe-area top; also respect sides on landscape */
-  right: max(14px, env(safe-area-inset-right, 0px));
-}
+/* theme-btn lives in header-actions */
+
 
 .scroll-progress {
   top: 0;
