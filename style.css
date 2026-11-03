@@ -239,6 +239,8 @@ code {
   gap: 8px;
   flex-shrink: 0;
   margin-left: auto;
+  position: relative;
+  z-index: 61;
 }
 
 .theme-btn {
@@ -272,7 +274,7 @@ code {
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 60;
   background: transparent;
   backdrop-filter: blur(0px) saturate(1);
   -webkit-backdrop-filter: blur(0px) saturate(1);
@@ -411,16 +413,19 @@ code {
   display: none;
   position: fixed;
   inset: 0;
-  z-index: 45;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(22px) saturate(1.4);
-  -webkit-backdrop-filter: blur(22px) saturate(1.4);
-  padding: calc(env(safe-area-inset-top, 0px) + 80px) 24px 40px;
+  z-index: 55;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  padding: calc(env(safe-area-inset-top, 0px) + 72px) 16px max(20px, env(safe-area-inset-bottom, 0px));
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.35s var(--ease);
+  overflow-y: auto; /* узкие экраны (SE) — скролл меню */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .mobile-nav.open {
   display: flex;
@@ -428,17 +433,21 @@ code {
   pointer-events: auto;
 }
 .mobile-nav a {
-  padding: 15px 18px;
-  border-radius: 14px;
-  font-size: 17px;
+  padding: 12px 16px;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--ink);
   background: var(--glass-bg);
   border: 1px solid var(--line);
   box-shadow: 0 0 0 1px var(--gold-line);
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), background 0.2s;
+  transform: translateY(10px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background 0.2s;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
 }
 .mobile-nav.open a {
   opacity: 1;
@@ -626,7 +635,7 @@ code {
   border: 1px solid var(--gold-line);
   box-shadow: var(--shadow-lg), 0 0 0 1px rgba(201,168,75,0.08), 0 0 60px rgba(91,75,219,0.12);
   animation: fadeInUp 0.9s var(--ease-out) 0.2s both;
-  transition: transform 0.45s var(--ease), box-shadow 0.45s;
+  transition: transform 0.55s var(--ease), box-shadow 0.45s;
 }
 .hero-card:hover {
   transform: translate3d(var(--tx), calc(var(--ty) - 6px), 0) scale(1.015);
@@ -714,7 +723,12 @@ code {
 }
 
 /* Sections */
-.section { padding: 72px 24px; max-width: 1120px; margin: 0 auto; }
+.section {
+  padding: 72px 24px;
+  max-width: 1120px;
+  margin: 0 auto;
+  scroll-margin-top: 80px; /* якоря не уезжают под sticky topbar */
+}
 .section-label {
   display: flex;
   align-items: center;
@@ -870,11 +884,14 @@ code {
   background: transparent;
   color: var(--ink);
   font: 500 12px var(--font);
-  padding: 7px 12px;
+  padding: 10px 14px;
+  min-height: 44px;
   border-radius: 999px;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s, transform 0.25s var(--ease-spring);
   box-shadow: 0 0 0 1px transparent;
+  display: inline-flex;
+  align-items: center;
 }
 .chip:hover {
   border-color: var(--accent);
@@ -1225,7 +1242,7 @@ footer p { margin: 0 0 6px; }
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 55;
+  z-index: 40;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(16px) saturate(1.3);
@@ -1236,6 +1253,7 @@ footer p { margin: 0 0 6px; }
   transition: transform 0.4s var(--ease);
 }
 .mobile-cta.show { transform: translateY(0); }
+body.menu-open .mobile-cta { display: none !important; }
 .mobile-cta .btn {
   width: 100%;
   padding: 14px 20px;
@@ -1264,7 +1282,10 @@ footer p { margin: 0 0 6px; }
 @media (max-width: 720px) {
   .eco-grid, .feat-grid, .cmd-grid { grid-template-columns: 1fr; }
   .hero { padding: 28px 16px 24px; }
-  .section { padding: 44px 16px; }
+  .section {
+    padding: 44px 16px;
+    scroll-margin-top: 60px; /* ниже topbar на мобиле */
+  }
   .cta { padding: 0 16px 48px; }
   .cta-banner { padding: 32px 20px; border-radius: 18px; }
   .topbar { padding: 0 12px; }
@@ -1520,9 +1541,21 @@ footer p { margin: 0 0 6px; }
   outline-offset: 3px;
 }
 .btn:focus-visible,
-.chip:focus-visible,
 .tab:focus-visible {
   outline-offset: 2px;
+}
+.chip:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  position: relative;
+  z-index: 1; /* обводка не перекрывает соседние чипы */
+}
+.live-chat-form input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--gold-line),
+    0 0 0 4px var(--gold-soft);
 }
 
 /* ===== Magnetic-ish primary ===== */
@@ -1678,7 +1711,8 @@ body {
   min-height: 100%;
   min-height: 100dvh;
   min-height: -webkit-fill-available;
-  padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
@@ -1780,5 +1814,180 @@ textarea {
   .cta {
     padding-left: max(14px, env(safe-area-inset-left, 0px));
     padding-right: max(14px, env(safe-area-inset-right, 0px));
+  }
+}
+
+
+/* ===== TZ 2026: diagonal cards + tactile + chat polish ===== */
+.eco-card,
+.feat-card,
+.cmd-card {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
+  position: relative;
+  /* clip-path режет box-shadow — тень через filter */
+  box-shadow: none !important;
+  filter: drop-shadow(0 4px 14px rgba(17, 15, 24, 0.08))
+          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 35%, transparent));
+  /* Safari/iOS: hardware layer, иначе drop-shadow мерцает/пропадает */
+  transform: translate3d(0, 0, 0);
+  will-change: filter;
+  transition:
+    transform 0.25s var(--ease),
+    filter 0.3s var(--ease),
+    border-color 0.25s,
+    background 0.25s;
+}
+.eco-card:hover,
+.feat-card:hover,
+.cmd-card:hover {
+  box-shadow: none !important;
+  filter: drop-shadow(0 12px 28px rgba(17, 15, 24, 0.16))
+          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 55%, transparent));
+}
+:root[data-theme="dark"] .eco-card,
+:root[data-theme="dark"] .feat-card,
+:root[data-theme="dark"] .cmd-card {
+  filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35))
+          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 30%, transparent));
+}
+:root[data-theme="dark"] .eco-card:hover,
+:root[data-theme="dark"] .feat-card:hover,
+:root[data-theme="dark"] .cmd-card:hover {
+  filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.5))
+          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 50%, transparent));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .eco-card,
+  :root:not([data-theme="light"]) .feat-card,
+  :root:not([data-theme="light"]) .cmd-card {
+    filter: drop-shadow(0 4px 18px rgba(0, 0, 0, 0.35))
+            drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 30%, transparent));
+  }
+  :root:not([data-theme="light"]) .eco-card:hover,
+  :root:not([data-theme="light"]) .feat-card:hover,
+  :root:not([data-theme="light"]) .cmd-card:hover {
+    filter: drop-shadow(0 14px 32px rgba(0, 0, 0, 0.5))
+            drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 50%, transparent));
+  }
+}
+.eco-card::after,
+.feat-card::after,
+.cmd-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  border-right: 1px solid var(--gold-line);
+  border-bottom: 1px solid var(--gold-line);
+  pointer-events: none;
+  transform: skewX(-45deg) translate(6px, 6px);
+  opacity: 0.85;
+}
+
+.btn:active,
+.chip:active,
+.tab:active,
+.cmd-card:active,
+.eco-card:active,
+.feat-card:active,
+.menu-toggle:active,
+.theme-btn:active {
+  transform: scale(0.97);
+}
+
+.btn,
+.chip,
+.tab,
+.glass-card {
+  transition: transform 0.2s var(--ease), box-shadow 0.3s var(--ease), border-color 0.25s, background 0.25s;
+}
+
+/* Hero card richer gradient */
+.hero-card {
+  background: linear-gradient(
+    155deg,
+    var(--dark) 0%,
+    color-mix(in srgb, var(--dark) 55%, var(--purple-deep)) 45%,
+    color-mix(in srgb, var(--dark) 70%, #1a1430) 78%,
+    color-mix(in srgb, var(--dark) 85%, var(--gold) 8%) 100%
+  ) !important;
+}
+
+/* Chat bubbles 2026 */
+.live-chat .chat-user {
+  background: var(--accent) !important;
+  color: #fff;
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--gold)) !important;
+}
+.live-chat .chat-user .chat-name {
+  color: rgba(255, 255, 255, 0.72);
+}
+.live-chat .chat-user p {
+  color: #fff;
+}
+.live-chat .chat-bot {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  border-color: var(--gold-line) !important;
+}
+
+#chat-send:disabled,
+#chat-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+#chat-send:disabled {
+  pointer-events: none;
+}
+
+/* Reveal delays max 0.5s */
+.reveal-delay-1 { --d: 0.06s; }
+.reveal-delay-2 { --d: 0.12s; }
+.reveal-delay-3 { --d: 0.18s; }
+.reveal-delay-4 { --d: 0.24s; }
+.reveal-delay-5 { --d: 0.3s; }
+
+/* Mobile: lighter backdrop-filter */
+@media (max-width: 960px) {
+  .glass-card {
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  }
+  .topbar.scrolled {
+    backdrop-filter: blur(12px) saturate(1.3);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+  }
+  .mobile-nav {
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  }
+  .mobile-cta {
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  }
+  .theme-btn,
+  .menu-toggle {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .btn {
+    min-height: 44px;
+  }
+  .tab {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eco-card,
+  .feat-card,
+  .cmd-card {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
   }
 }

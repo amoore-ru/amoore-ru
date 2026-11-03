@@ -82,7 +82,6 @@
     <a href="#news">Новости</a>
     <a href="#faq">FAQ</a>
     <a href="#start">Начать</a>
-    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
   </nav>
 
   <!-- Hero -->
@@ -322,7 +321,7 @@
     </ol>
 
     <div class="qr-box glass-card">
-      <img class="code" src="images/qr-code.webp" width="148" height="148" alt="QR-код @asoave_bot">
+      <img class="code" src="images/qr-code.webp" width="148" height="148" alt="QR-код @asoave_bot" loading="lazy" decoding="async">
       <div>
         <p>Откройте бота в Telegram</p>
         <strong>@asoave_bot</strong>
@@ -425,21 +424,26 @@
 
       var menuBtn = document.getElementById("menu-toggle");
       var mobileNav = document.getElementById("mobile-nav");
+      var mobileCta = document.getElementById("mobile-cta");
+      function setMenuOpen(open) {
+        if (!menuBtn || !mobileNav) return;
+        mobileNav.classList.toggle("open", open);
+        menuBtn.classList.toggle("open", open);
+        menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        mobileNav.setAttribute("aria-hidden", open ? "false" : "true");
+        document.body.style.overflow = open ? "hidden" : "";
+        document.body.classList.toggle("menu-open", open);
+        if (mobileCta) {
+          mobileCta.style.display = open ? "none" : "";
+        }
+      }
       if (menuBtn && mobileNav) {
         menuBtn.addEventListener("click", function () {
-          var open = mobileNav.classList.toggle("open");
-          menuBtn.classList.toggle("open", open);
-          menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
-          mobileNav.setAttribute("aria-hidden", open ? "false" : "true");
-          document.body.style.overflow = open ? "hidden" : "";
+          setMenuOpen(!mobileNav.classList.contains("open"));
         });
         mobileNav.querySelectorAll("a").forEach(function (a) {
           a.addEventListener("click", function () {
-            mobileNav.classList.remove("open");
-            menuBtn.classList.remove("open");
-            menuBtn.setAttribute("aria-expanded", "false");
-            mobileNav.setAttribute("aria-hidden", "true");
-            document.body.style.overflow = "";
+            setMenuOpen(false);
           });
         });
       }
@@ -480,6 +484,7 @@
       });
       sections = Object.keys(map).map(function (k) { return map[k]; });
 
+      var scrollRaf = 0;
       function onScroll() {
         if (topbar) topbar.classList.toggle("scrolled", window.scrollY > 12);
         var y = window.scrollY + 120;
@@ -493,7 +498,14 @@
           });
         });
       }
-      window.addEventListener("scroll", onScroll, { passive: true });
+      function onScrollRaf() {
+        if (scrollRaf) return;
+        scrollRaf = requestAnimationFrame(function () {
+          scrollRaf = 0;
+          onScroll();
+        });
+      }
+      window.addEventListener("scroll", onScrollRaf, { passive: true });
       onScroll();
 
       // Demo chat (frontend only)
@@ -549,6 +561,17 @@
           return generic[Math.floor(Math.random() * generic.length)];
         }
 
+        var sendBtn = document.getElementById("chat-send");
+        var chatBusy = false;
+
+        function setChatBusy(busy) {
+          chatBusy = busy;
+          if (input) input.disabled = busy;
+          if (sendBtn) sendBtn.disabled = busy;
+          if (suggestions) suggestions.style.pointerEvents = busy ? "none" : "";
+          if (suggestions) suggestions.style.opacity = busy ? "0.55" : "";
+        }
+
         function addBubble(who, text, typing) {
           var row = document.createElement("div");
           row.className = "chat-bubble " + (who === "user" ? "chat-user" : "chat-bot");
@@ -561,7 +584,12 @@
           row.appendChild(name);
           row.appendChild(p);
           log.appendChild(row);
-          log.scrollTop = log.scrollHeight;
+          /* скролл только внутри чата, не всей страницы */
+          try {
+            log.scrollTo({ top: log.scrollHeight, behavior: "smooth" });
+          } catch (err) {
+            log.scrollTop = log.scrollHeight;
+          }
           return row;
         }
 
@@ -573,14 +601,22 @@
             b.className = "chip";
             b.textContent = label;
             b.addEventListener("click", function () {
+              if (chatBusy) return;
+              if (label === "Открыть в Telegram") {
+                window.open("https://t.me/asoave_bot", "_blank", "noopener");
+                return;
+              }
+              b.remove();
               input.value = label;
               form.requestSubmit();
+              input.blur(); /* свернуть клавиатуру на iOS после чипса */
             });
             suggestions.appendChild(b);
           });
         }
 
         function botReply(userText) {
+          setChatBusy(true);
           var typing = addBubble("bot", "•", true);
           var dots = 1;
           var dotTimer = setInterval(function () {
@@ -593,11 +629,12 @@
             clearInterval(dotTimer);
             typing.remove();
             addBubble("bot", replyFor(userText), false);
+            setChatBusy(false);
             if (turns >= maxTurns) {
               setSuggestions(["Открыть в Telegram"]);
-              suggestions.querySelector("button")?.addEventListener("click", function () {
-                window.open("https://t.me/asoave_bot", "_blank", "noopener");
-              });
+              input.disabled = true;
+              if (sendBtn) sendBtn.disabled = true;
+              input.placeholder = "Демо завершено. Перейдите в Telegram.";
             } else {
               setSuggestions(["Расскажи ещё", "Мне тревожно", "Что ты умеешь?", "Пока"]);
             }
@@ -606,10 +643,14 @@
 
         form.addEventListener("submit", function (e) {
           e.preventDefault();
+          if (chatBusy) return;
           var text = (input.value || "").trim();
           if (!text) return;
           if (turns >= maxTurns) {
             addBubble("bot", "Демо на этом исчерпано. Продолжим в Telegram — там я настоящая.", false);
+            input.disabled = true;
+            if (sendBtn) sendBtn.disabled = true;
+            input.placeholder = "Демо завершено. Перейдите в Telegram.";
             return;
           }
           turns += 1;
@@ -634,8 +675,8 @@
             var r = heroZone.getBoundingClientRect();
             var x = (e.clientX - r.left) / r.width - 0.5;
             var y = (e.clientY - r.top) / r.height - 0.5;
-            heroCard.style.setProperty("--tx", (x * 10).toFixed(2) + "px");
-            heroCard.style.setProperty("--ty", (y * 8).toFixed(2) + "px");
+            heroCard.style.setProperty("--tx", (x * 6).toFixed(2) + "px");
+            heroCard.style.setProperty("--ty", (y * 5).toFixed(2) + "px");
           }, { passive: true });
           heroZone.addEventListener("mouseleave", function () {
             heroCard.style.setProperty("--tx", "0px");
@@ -660,21 +701,30 @@
 
       // Scroll progress
       var bar = document.getElementById("scroll-progress");
+      var progRaf = 0;
       function updateProgress() {
         if (!bar) return;
         var h = document.documentElement.scrollHeight - window.innerHeight;
         var p = h > 0 ? (window.scrollY / h) * 100 : 0;
         bar.style.width = p.toFixed(2) + "%";
       }
-      window.addEventListener("scroll", updateProgress, { passive: true });
+      function updateProgressRaf() {
+        if (progRaf) return;
+        progRaf = requestAnimationFrame(function () {
+          progRaf = 0;
+          updateProgress();
+        });
+      }
+      window.addEventListener("scroll", updateProgressRaf, { passive: true });
       updateProgress();
 
-      // Magnetic primary buttons
+      // Magnetic primary buttons — только desktop >1024
       (function () {
         if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         document.querySelectorAll(".btn-primary").forEach(function (btn) {
           btn.addEventListener("mousemove", function (e) {
+            if (window.innerWidth <= 1024) return;
             var r = btn.getBoundingClientRect();
             var x = e.clientX - r.left - r.width / 2;
             var y = e.clientY - r.top - r.height / 2;
@@ -688,17 +738,25 @@
 
 
 
-      // Mobile sticky CTA
+      // Mobile sticky CTA (rAF, как progress и topbar)
       (function () {
         var bar = document.getElementById("mobile-cta");
         if (!bar) return;
+        var ctaRaf = 0;
         function check() {
           var show = window.innerWidth <= 960 && window.scrollY > 280;
           bar.classList.toggle("show", show);
           document.body.classList.toggle("has-mobile-cta", show);
         }
-        window.addEventListener("scroll", check, { passive: true });
-        window.addEventListener("resize", check, { passive: true });
+        function checkRaf() {
+          if (ctaRaf) return;
+          ctaRaf = requestAnimationFrame(function () {
+            ctaRaf = 0;
+            check();
+          });
+        }
+        window.addEventListener("scroll", checkRaf, { passive: true });
+        window.addEventListener("resize", checkRaf, { passive: true });
         check();
       })();
 
