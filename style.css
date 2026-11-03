@@ -306,11 +306,13 @@ code {
 .topbar-inner {
   max-width: 1120px;
   margin: 0 auto;
-  height: 64px;
+  min-height: 64px;
+  padding: 12px 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .brand {
@@ -354,6 +356,8 @@ code {
   align-items: center;
   gap: 2px;
   position: relative;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .nav-links a {
   padding: 7px 11px;
@@ -408,6 +412,17 @@ code {
 .menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Smart wrap: when ResizeObserver adds .wrapped */
+.topbar.wrapped .nav-links {
+  display: none;
+}
+.topbar.wrapped .menu-toggle {
+  display: flex;
+}
+.topbar.wrapped .header-tg {
+  display: none;
+}
 
 .mobile-nav {
   display: none;
@@ -1290,7 +1305,8 @@ body.menu-open .mobile-cta { display: none !important; }
   .cta-banner { padding: 32px 20px; border-radius: 18px; }
   .topbar { padding: 0 12px; }
   .topbar-inner {
-    height: 56px;
+    min-height: 56px;
+    padding: 10px 0;
     gap: 8px;
   }
   .brand-text span { display: none; }
@@ -1440,7 +1456,7 @@ body.menu-open .mobile-cta { display: none !important; }
   .hero-meta { flex-direction: column; gap: 12px; }
   .hero { padding: 28px 14px 24px; }
   .section { padding: 40px 14px; }
-  .topbar-inner { height: 52px; }
+  .topbar-inner { min-height: 52px; padding: 8px 0; }
 }
 
 @media (min-width: 1280px) {
@@ -1990,4 +2006,153 @@ textarea {
   .cmd-card {
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
   }
+}
+
+
+/* ========== MEGA-UPGRADE: Liquid Glass 2.0 + Cinematic Motion ========== */
+
+/* Shared vars for spotlight */
+.hero-card,
+.cta-banner {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Spotlight layer via extra child (added by JS) or enhanced existing glow */
+.hero-card .spotlight,
+.cta-banner .spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--mouse-x) var(--mouse-y),
+    rgba(201, 168, 75, 0.22),
+    transparent 55%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease);
+  z-index: 1;
+}
+.hero-card:hover .spotlight,
+.cta-banner:hover .spotlight {
+  opacity: 1;
+}
+
+/* Liquid glass refraction on hover */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-card.liquid-active,
+  .cta-banner.liquid-active {
+    filter: url(#liquid-glass);
+  }
+}
+
+/* Animated gradient border via box-shadow + background on a thin ring using outline technique */
+.hero-card,
+.cta-banner {
+  isolation: isolate;
+}
+.hero-card.liquid-border,
+.cta-banner.liquid-border {
+  box-shadow:
+    0 0 0 1px transparent,
+    var(--shadow-lg),
+    0 0 0 1px rgba(201,168,75,0.08),
+    0 0 60px rgba(91,75,219,0.12);
+  background-clip: padding-box;
+}
+/* Animated border using conic-gradient pseudo on a wrapper-like approach via border-image fallback */
+@supports (background: paint(something)) {
+  /* no-op, keep simple */
+}
+.hero-card.liquid-border::after,
+.cta-banner.liquid-border::after {
+  /* keep existing spinning circle, just tint it more */
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--accent));
+  opacity: 0.7;
+}
+
+/* Stronger 3D parallax */
+.hero-card {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  will-change: transform;
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.2s var(--ease-out);
+}
+
+/* Enhanced reveal with blur + slight rotate (paused offscreen via JS) */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px) rotateZ(1.1deg) translateZ(0);
+    filter: blur(6px);
+    transition:
+      opacity 0.8s var(--ease-out),
+      transform 0.8s var(--ease-out),
+      filter 0.8s var(--ease-out);
+    transition-delay: var(--d, 0s);
+    will-change: transform, opacity, filter;
+  }
+  .reveal.from-left {
+    transform: translateX(-28px) rotateZ(-0.9deg) translateZ(0);
+  }
+  .reveal.from-right {
+    transform: translateX(28px) rotateZ(0.9deg) translateZ(0);
+  }
+  .reveal.scale-in {
+    transform: scale(0.94) rotateZ(0.4deg) translateZ(0);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1) rotateZ(0) translateZ(0);
+    filter: blur(0);
+  }
+}
+
+/* Magnetic elements */
+.brand,
+.btn-primary {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Pause class for IntersectionObserver */
+.anim-paused,
+.anim-paused * {
+  animation-play-state: paused !important;
+}
+
+/* Topbar wrap safety */
+.topbar.wrapped {
+  /* ensure backdrop covers full height after wrap */
+}
+
+/* ========== Performance Hardening (GPU + pause) ========== */
+.hero-card,
+.cta-banner,
+.glass-card,
+.eco-card,
+.feat-card,
+.cmd-card,
+.brand,
+.btn-primary {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Brand logo image (if swapped later) */
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+}
+
+/* Ensure ambient / ornaments pause via .anim-paused */
+.anim-paused,
+.anim-paused * {
+  animation-play-state: paused !important;
 }
