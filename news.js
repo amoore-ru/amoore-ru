@@ -6,6 +6,12 @@
 
 var NEWS = [
   {
+    type: "news",
+    date: "3.11.2026",
+    title: "Сбой",
+    text: "в amoore Studio массовый сбой, сайт закрыт на неопределенный срок"
+  },
+  {
     type: "patch",
     date: "3.11.2026",
     title: "Обновление",
