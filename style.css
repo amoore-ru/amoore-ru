@@ -306,11 +306,16 @@ code {
 .topbar-inner {
   max-width: 1120px;
   margin: 0 auto;
-  height: 64px;
+  min-height: 64px;
+  padding: 12px 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .brand {
@@ -354,6 +359,11 @@ code {
   align-items: center;
   gap: 2px;
   position: relative;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
 }
 .nav-links a {
   padding: 7px 11px;
@@ -408,6 +418,17 @@ code {
 .menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .menu-toggle.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
 .menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Smart wrap: when ResizeObserver adds .wrapped */
+.topbar.wrapped .nav-links {
+  display: none;
+}
+.topbar.wrapped .menu-toggle {
+  display: flex;
+}
+.topbar.wrapped .header-tg {
+  display: none;
+}
 
 .mobile-nav {
   display: none;
@@ -1261,6 +1282,13 @@ body.menu-open .mobile-cta { display: none !important; }
   border-radius: 14px;
 }
 
+/* Планшеты / узкие десктопы: бургер раньше, чтобы ссылки не вылезали */
+@media (max-width: 1100px) {
+  .nav-links { display: none; }
+  .menu-toggle { display: flex; }
+  .header-tg { display: none; }
+}
+
 @media (max-width: 960px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero-card {
@@ -1290,7 +1318,8 @@ body.menu-open .mobile-cta { display: none !important; }
   .cta-banner { padding: 32px 20px; border-radius: 18px; }
   .topbar { padding: 0 12px; }
   .topbar-inner {
-    height: 56px;
+    min-height: 56px;
+    padding: 10px 0;
     gap: 8px;
   }
   .brand-text span { display: none; }
@@ -1440,7 +1469,7 @@ body.menu-open .mobile-cta { display: none !important; }
   .hero-meta { flex-direction: column; gap: 12px; }
   .hero { padding: 28px 14px 24px; }
   .section { padding: 40px 14px; }
-  .topbar-inner { height: 52px; }
+  .topbar-inner { min-height: 52px; padding: 8px 0; }
 }
 
 @media (min-width: 1280px) {
@@ -1818,21 +1847,18 @@ textarea {
 }
 
 
-/* ===== TZ 2026: diagonal cards + tactile + chat polish ===== */
+/* ===== TZ 2026: diagonal cards — drop-shadow (clip-path safe) ===== */
 .eco-card,
 .feat-card,
 .cmd-card {
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%);
   position: relative;
-  /* clip-path режет box-shadow — тень через filter */
   box-shadow: none !important;
-  filter: drop-shadow(0 4px 14px rgba(17, 15, 24, 0.08))
-          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 35%, transparent));
-  /* Safari/iOS: hardware layer, иначе drop-shadow мерцает/пропадает */
-  transform: translate3d(0, 0, 0);
-  will-change: filter;
+  filter: drop-shadow(0 6px 16px rgba(17, 15, 24, 0.1))
+          drop-shadow(0 0 1px color-mix(in srgb, var(--gold) 40%, transparent));
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
   transition:
-    transform 0.25s var(--ease),
     filter 0.3s var(--ease),
     border-color 0.25s,
     background 0.25s;
@@ -1841,8 +1867,16 @@ textarea {
 .feat-card:hover,
 .cmd-card:hover {
   box-shadow: none !important;
-  filter: drop-shadow(0 12px 28px rgba(17, 15, 24, 0.16))
-          drop-shadow(0 0 0.5px color-mix(in srgb, var(--gold) 55%, transparent));
+  filter: drop-shadow(0 14px 32px rgba(17, 15, 24, 0.18))
+          drop-shadow(0 0 1px color-mix(in srgb, var(--gold) 60%, transparent));
+}
+@media (hover: none) {
+  .eco-card:hover,
+  .feat-card:hover,
+  .cmd-card:hover {
+    filter: drop-shadow(0 6px 16px rgba(17, 15, 24, 0.1))
+            drop-shadow(0 0 1px color-mix(in srgb, var(--gold) 40%, transparent));
+  }
 }
 :root[data-theme="dark"] .eco-card,
 :root[data-theme="dark"] .feat-card,
@@ -1990,4 +2024,153 @@ textarea {
   .cmd-card {
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
   }
+}
+
+
+/* ========== MEGA-UPGRADE: Liquid Glass 2.0 + Cinematic Motion ========== */
+
+/* Shared vars for spotlight */
+.hero-card,
+.cta-banner {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Spotlight layer via extra child (added by JS) or enhanced existing glow */
+.hero-card .spotlight,
+.cta-banner .spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--mouse-x) var(--mouse-y),
+    rgba(201, 168, 75, 0.22),
+    transparent 55%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease);
+  z-index: 1;
+}
+.hero-card:hover .spotlight,
+.cta-banner:hover .spotlight {
+  opacity: 1;
+}
+
+/* Liquid glass refraction on hover */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-card.liquid-active,
+  .cta-banner.liquid-active {
+    filter: url(#liquid-glass);
+  }
+}
+
+/* Animated gradient border via box-shadow + background on a thin ring using outline technique */
+.hero-card,
+.cta-banner {
+  isolation: isolate;
+}
+.hero-card.liquid-border,
+.cta-banner.liquid-border {
+  box-shadow:
+    0 0 0 1px transparent,
+    var(--shadow-lg),
+    0 0 0 1px rgba(201,168,75,0.08),
+    0 0 60px rgba(91,75,219,0.12);
+  background-clip: padding-box;
+}
+/* Animated border using conic-gradient pseudo on a wrapper-like approach via border-image fallback */
+@supports (background: paint(something)) {
+  /* no-op, keep simple */
+}
+.hero-card.liquid-border::after,
+.cta-banner.liquid-border::after {
+  /* keep existing spinning circle, just tint it more */
+  border-color: color-mix(in srgb, var(--gold) 40%, var(--accent));
+  opacity: 0.7;
+}
+
+/* Stronger 3D parallax */
+.hero-card {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  will-change: transform;
+  transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.2s var(--ease-out);
+}
+
+/* Enhanced reveal with blur + slight rotate (paused offscreen via JS) */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px) rotateZ(1.1deg) translateZ(0);
+    filter: blur(6px);
+    transition:
+      opacity 0.8s var(--ease-out),
+      transform 0.8s var(--ease-out),
+      filter 0.8s var(--ease-out);
+    transition-delay: var(--d, 0s);
+    will-change: transform, opacity, filter;
+  }
+  .reveal.from-left {
+    transform: translateX(-28px) rotateZ(-0.9deg) translateZ(0);
+  }
+  .reveal.from-right {
+    transform: translateX(28px) rotateZ(0.9deg) translateZ(0);
+  }
+  .reveal.scale-in {
+    transform: scale(0.94) rotateZ(0.4deg) translateZ(0);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1) rotateZ(0) translateZ(0);
+    filter: blur(0);
+  }
+}
+
+/* Magnetic elements */
+.brand,
+.btn-primary {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Pause class for IntersectionObserver */
+.anim-paused,
+.anim-paused * {
+  animation-play-state: paused !important;
+}
+
+/* Topbar wrap safety */
+.topbar.wrapped {
+  /* ensure backdrop covers full height after wrap */
+}
+
+/* ========== Performance Hardening (GPU + pause) ========== */
+.hero-card,
+.cta-banner,
+.glass-card,
+.eco-card,
+.feat-card,
+.cmd-card,
+.brand,
+.btn-primary {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Brand logo image (if swapped later) */
+.brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: block;
+}
+
+/* Ensure ambient / ornaments pause via .anim-paused */
+.anim-paused,
+.anim-paused * {
+  animation-play-state: paused !important;
 }

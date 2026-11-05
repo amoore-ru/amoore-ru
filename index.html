@@ -14,31 +14,60 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
 
+  <!-- Open Graph -->
   <meta property="og:title" content="amoore — Официальный сайт">
   <meta property="og:description" content="amoore — ИИ-бот в Telegram: общение, игры и модерация чатов.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://amoore-ru.github.io/">
+  <meta property="og:image" content="https://amoore-ru.github.io/android-chrome-512x512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:locale" content="ru_RU">
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="amoore — Официальный сайт">
+  <meta name="twitter:description" content="amoore — ИИ-бот в Telegram: общение, игры и модерация чатов.">
+  <meta name="twitter:image" content="https://amoore-ru.github.io/android-chrome-512x512.png">
 
+  <!-- Favicons (cache-bust ?v=2) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=2">
+  <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png?v=2">
+
+  <!-- Network hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="//t.me">
 
+  <!-- Critical CSS preload -->
+  <link rel="preload" href="style.css" as="style">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Fonts with display=swap -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Theme FOUC prevention (must stay blocking & tiny) -->
   <script>
     try {
       var t = localStorage.getItem("theme");
       if (t) document.documentElement.setAttribute("data-theme", t);
     } catch (e) {}
   </script>
-
-  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <!-- Liquid Glass SVG filter (hidden) -->
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <filter id="liquid-glass" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="3" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
   <div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
   <div class="page-loader" id="page-loader" aria-hidden="true"><div class="page-loader-mark">a.</div></div>
   <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
@@ -117,7 +146,8 @@
         </div>
       </div>
 
-      <aside class="hero-card" aria-hidden="true">
+      <aside class="hero-card liquid-border" aria-hidden="true">
+        <div class="spotlight" aria-hidden="true"></div>
         <div>
           <div class="hero-card-label">amoore AI</div>
           <h2>Всё начинается<br>с разговора.</h2>
@@ -332,7 +362,8 @@
 
   <!-- CTA -->
   <section class="cta reveal">
-    <div class="cta-banner">
+    <div class="cta-banner liquid-border">
+      <div class="spotlight" aria-hidden="true"></div>
       <h2>Готовы познакомиться с amoore?</h2>
       <p>Напишите боту — она уже ждёт.</p>
       <a class="btn btn-primary btn-lg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
@@ -354,7 +385,7 @@
     </p>
   </footer>
 
-  <script src="news.js"></script>
+  <script src="news.js" defer></script>
   <script>
     (function () {
       var btn = document.getElementById("theme");
@@ -508,8 +539,17 @@
       window.addEventListener("scroll", onScrollRaf, { passive: true });
       onScroll();
 
+      // Heavy UI (chat, glass, magnetic) — defer to idle / load
+      function runWhenIdle(fn) {
+        if ("requestIdleCallback" in window) {
+          requestIdleCallback(fn, { timeout: 1800 });
+        } else {
+          window.addEventListener("load", function () { setTimeout(fn, 0); });
+        }
+      }
+
       // Demo chat (frontend only)
-      (function initDemoChat() {
+      runWhenIdle(function initDemoChat() {
         var log = document.getElementById("chat-log");
         var form = document.getElementById("chat-form");
         var input = document.getElementById("chat-input");
@@ -662,28 +702,141 @@
         // seed
         addBubble("bot", "Привет. Это короткое демо на сайте. Напиши что угодно — или ткни подсказку.", false);
         setSuggestions(starters);
-      })();
+      });
 
+      // ===== MEGA-UPGRADE: Adaptive Header (ResizeObserver) — early =====
+      (function initAdaptiveHeader() {
+        var topbar = document.querySelector(".topbar");
+        var inner = document.querySelector(".topbar-inner");
+        var nav = document.getElementById("nav-links");
+        if (!topbar || !inner || !nav || !window.ResizeObserver) return;
 
+        var brand = inner.querySelector(".brand");
+        var actions = inner.querySelector(".header-actions");
+        var checkRaf = 0;
 
-      // Soft follow on hero card
-      var heroCard = document.querySelector(".hero-card");
-      if (heroCard && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        var heroZone = document.querySelector(".hero");
-        if (heroZone) {
-          heroZone.addEventListener("mousemove", function (e) {
-            var r = heroZone.getBoundingClientRect();
-            var x = (e.clientX - r.left) / r.width - 0.5;
-            var y = (e.clientY - r.top) / r.height - 0.5;
-            heroCard.style.setProperty("--tx", (x * 6).toFixed(2) + "px");
-            heroCard.style.setProperty("--ty", (y * 5).toFixed(2) + "px");
-          }, { passive: true });
-          heroZone.addEventListener("mouseleave", function () {
-            heroCard.style.setProperty("--tx", "0px");
-            heroCard.style.setProperty("--ty", "0px");
+        function checkWrap() {
+          // Temporarily show nav to measure natural width
+          var wasWrapped = topbar.classList.contains("wrapped");
+          if (wasWrapped) topbar.classList.remove("wrapped");
+
+          var available = inner.clientWidth;
+          var brandW = brand ? brand.offsetWidth : 0;
+          var actionsW = actions ? actions.offsetWidth : 0;
+          var navW = nav.scrollWidth;
+          var gap = 24; // approximate gaps
+
+          var needsWrap = (brandW + navW + actionsW + gap) > available + 4;
+
+          if (needsWrap) {
+            topbar.classList.add("wrapped");
+          } else {
+            topbar.classList.remove("wrapped");
+          }
+        }
+
+        function scheduleCheck() {
+          if (checkRaf) return;
+          checkRaf = requestAnimationFrame(function () {
+            checkRaf = 0;
+            checkWrap();
           });
         }
-      }
+
+        var ro = new ResizeObserver(scheduleCheck);
+        ro.observe(inner);
+        // also on font load / images
+        window.addEventListener("load", scheduleCheck, { once: true });
+        scheduleCheck();
+      })();
+
+      // ===== 3D Parallax + Spotlight + Liquid on hero/cta (idle) =====
+      runWhenIdle(function initGlassMotion() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+        var heroCard = document.querySelector(".hero-card");
+        var ctaBanner = document.querySelector(".cta-banner");
+        var heroZone = document.querySelector(".hero");
+
+        function bindSpotlightAndTilt(el, zone, maxTilt) {
+          if (!el) return;
+          maxTilt = maxTilt || 8;
+          var target = zone || el;
+
+          target.addEventListener("mousemove", function (e) {
+            var r = el.getBoundingClientRect();
+            var x = ((e.clientX - r.left) / r.width) * 100;
+            var y = ((e.clientY - r.top) / r.height) * 100;
+            el.style.setProperty("--mouse-x", x.toFixed(2) + "%");
+            el.style.setProperty("--mouse-y", y.toFixed(2) + "%");
+
+            var nx = (e.clientX - r.left) / r.width - 0.5;
+            var ny = (e.clientY - r.top) / r.height - 0.5;
+            el.style.setProperty("--rx", (-ny * maxTilt).toFixed(2) + "deg");
+            el.style.setProperty("--ry", (nx * maxTilt).toFixed(2) + "deg");
+            el.style.setProperty("--tx", (nx * 10).toFixed(2) + "px");
+            el.style.setProperty("--ty", (ny * 8).toFixed(2) + "px");
+
+            el.classList.add("liquid-active");
+          }, { passive: true });
+
+          target.addEventListener("mouseleave", function () {
+            el.style.setProperty("--mouse-x", "50%");
+            el.style.setProperty("--mouse-y", "50%");
+            el.style.setProperty("--rx", "0deg");
+            el.style.setProperty("--ry", "0deg");
+            el.style.setProperty("--tx", "0px");
+            el.style.setProperty("--ty", "0px");
+            el.classList.remove("liquid-active");
+          });
+        }
+
+        bindSpotlightAndTilt(heroCard, heroZone, 9);
+        bindSpotlightAndTilt(ctaBanner, null, 5);
+      });
+
+      // ===== Magnetic buttons + brand (idle) =====
+      runWhenIdle(function initMagnetic() {
+        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        function magnetic(el, strength) {
+          strength = strength || 0.18;
+          el.addEventListener("mousemove", function (e) {
+            if (window.innerWidth <= 1024) return;
+            var r = el.getBoundingClientRect();
+            var x = e.clientX - r.left - r.width / 2;
+            var y = e.clientY - r.top - r.height / 2;
+            el.style.transform = "translate(" + (x * strength).toFixed(2) + "px," + (y * strength).toFixed(2) + "px) translateZ(0)";
+          });
+          el.addEventListener("mouseleave", function () {
+            el.style.transform = "translateZ(0)";
+          });
+        }
+
+        document.querySelectorAll(".btn-primary").forEach(function (btn) {
+          magnetic(btn, 0.14);
+        });
+        var brand = document.querySelector(".brand");
+        if (brand) magnetic(brand, 0.08);
+      });
+
+      // ===== Pause animations when off-screen =====
+      (function initAnimPause() {
+        if (!("IntersectionObserver" in window)) return;
+        var targets = document.querySelectorAll(".hero-card, .cta-banner, .ambient, .hero-ornaments");
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.remove("anim-paused");
+            } else {
+              entry.target.classList.add("anim-paused");
+            }
+          });
+        }, { rootMargin: "80px 0px", threshold: 0 });
+        targets.forEach(function (t) { io.observe(t); });
+      })();
 
 
       // Page loader
@@ -717,26 +870,6 @@
       }
       window.addEventListener("scroll", updateProgressRaf, { passive: true });
       updateProgress();
-
-      // Magnetic primary buttons — только desktop >1024
-      (function () {
-        if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        document.querySelectorAll(".btn-primary").forEach(function (btn) {
-          btn.addEventListener("mousemove", function (e) {
-            if (window.innerWidth <= 1024) return;
-            var r = btn.getBoundingClientRect();
-            var x = e.clientX - r.left - r.width / 2;
-            var y = e.clientY - r.top - r.height / 2;
-            btn.style.transform = "translate(" + (x * 0.12) + "px," + (y * 0.16) + "px)";
-          });
-          btn.addEventListener("mouseleave", function () {
-            btn.style.transform = "";
-          });
-        });
-      })();
-
-
 
       // Mobile sticky CTA (rAF, как progress и topbar)
       (function () {
@@ -788,12 +921,13 @@
       });
 
     })();
-  </script><script>
-  window.AMOORE_SITE_ID = 'landing';
-  window.AMOORE_SUPABASE_URL = 'https://wogouiecoigzmxqccnsk.supabase.co';
-  window.AMOORE_SUPABASE_ANON = 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js"></script>
+  </script><!-- Подключение amoore-core.js -->
+  <script>
+    window.AMOORE_SITE_ID = 'landing';
+    window.AMOORE_SUPABASE_URL = 'https://wogouiecoigzmxqccnsk.supabase.co'; // Твой URL
+    window.AMOORE_SUPABASE_ANON = 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q'; // Твой ключ
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="amoore-core.js"></script>
 </body>
 </html>
