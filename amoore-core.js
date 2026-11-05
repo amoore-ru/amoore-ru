@@ -10,7 +10,7 @@
 
   var SITE_ID  = window.AMOORE_SITE_ID   || 'landing';
   var SB_URL   = window.AMOORE_SUPABASE_URL  || 'https://wogouiecoigzmxqccnsk.supabase.co';
-  var SB_ANON  = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
+  var SB_ANON  = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy';
   var AUTH_KEY = 'amoore_dev_auth';
   var NEWS_SEL = window.AMOORE_NEWS_SELECTOR || '#news-list, .news-list, [data-amoore-news]';
 
@@ -75,46 +75,46 @@
     return window.supabase.createClient(SB_URL, SB_ANON);
   }
 
-  // Shared lock CSS — iOS / Telegram WebView hardened
+  // Shared lock CSS — iOS / Telegram WebView (no body position:fixed)
   var LOCK_BASE_CSS = [
-    'html.amoore-locked,html.amoore-locked body{',
+    'html.amoore-locked,body.amoore-locked{',
     'overflow:hidden!important;',
-    'overscroll-behavior:none!important;',
-    'touch-action:none!important;',
-    'height:100%!important;',
-    'width:100%!important;',
-    '}',
-    'body.amoore-locked{',
-    'position:fixed!important;',
-    'inset:0!important;',
-    'overflow:hidden!important;',
-    'width:100%!important;',
     'height:100%!important;',
     'height:100dvh!important;',
+    'width:100%!important;',
     'overscroll-behavior:none!important;',
     'touch-action:none!important;',
     '-webkit-overflow-scrolling:auto!important;',
+    'transform:none!important;',
+    'perspective:none!important;',
     '}',
     '.amoore-lock-screen{',
     'position:fixed!important;',
-    'top:0!important;right:0!important;bottom:0!important;left:0!important;',
+    'top:0!important;',
+    'left:0!important;',
+    'right:0!important;',
+    'bottom:0!important;',
+    'width:100vw!important;',
     'width:100%!important;',
     'height:100vh!important;',
     'height:100dvh!important;',
     'min-height:100vh!important;',
     'min-height:100dvh!important;',
+    'max-height:100dvh!important;',
     'z-index:2147483647!important;',
     'display:flex!important;',
     'align-items:center!important;',
     'justify-content:center!important;',
+    'margin:0!important;',
+    'padding:0!important;',
     'overflow:hidden!important;',
     'overscroll-behavior:none!important;',
     'touch-action:none!important;',
     '-webkit-user-select:none!important;',
     'user-select:none!important;',
-    'padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)!important;',
     'box-sizing:border-box!important;',
     'font-family:Manrope,system-ui,-apple-system,sans-serif!important;',
+    'background:#070b16!important;',
     '}'
   ].join('');
 
@@ -159,14 +159,35 @@
     }
   };
 
-  var _lockScrollY = 0;
+  function preventScroll(e) {
+    e.preventDefault();
+  }
 
   function lockBodyScroll() {
     try {
-      _lockScrollY = window.scrollY || window.pageYOffset || 0;
       document.documentElement.classList.add('amoore-locked');
       document.body.classList.add('amoore-locked');
-      document.body.style.top = '-' + _lockScrollY + 'px';
+      // Только overflow/height — без position:fixed и top:-scrollY (ломает iOS WebView)
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100dvh';
+      document.documentElement.style.height = '100dvh';
+    } catch (e) {}
+  }
+
+  function unlockBodyScroll() {
+    try {
+      document.documentElement.classList.remove('amoore-locked');
+      document.body.classList.remove('amoore-locked');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.documentElement.style.height = '';
+      if (window.__amoore_lock_scroll) {
+        document.removeEventListener('touchmove', window.__amoore_lock_scroll, { passive: false });
+        document.removeEventListener('touchstart', window.__amoore_lock_scroll, { passive: false });
+        window.__amoore_lock_scroll = null;
+      }
     } catch (e) {}
   }
 
@@ -175,11 +196,20 @@
     var o = OVERLAYS[type] || OVERLAYS.maintenance;
     injectStyles(o.css);
     lockBodyScroll();
+
+    // Жёсткая блокировка жестов на всём document (анти-резиновый скролл)
+    window.__amoore_lock_scroll = preventScroll;
+    document.addEventListener('touchmove', preventScroll, { passive: false });
+    document.addEventListener('touchstart', preventScroll, { passive: false });
+
     var screen = createEl('div', 'amoore-lock-screen', o.html);
-    // Block touchmove bubble (rubber-band)
-    screen.addEventListener('touchmove', function (e) {
-      e.preventDefault();
-    }, { passive: false });
+    screen.setAttribute('role', 'dialog');
+    screen.setAttribute('aria-modal', 'true');
+    // На случай если document-слушатель не сработает в части WebView
+    screen.addEventListener('touchmove', preventScroll, { passive: false });
+    screen.addEventListener('wheel', preventScroll, { passive: false });
+
+    // В самый конец body, поверх всего
     document.body.appendChild(screen);
   }
 
