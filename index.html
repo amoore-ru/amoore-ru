@@ -267,8 +267,8 @@
     <h2>Что нового</h2>
     <p class="section-lead">Обновления, патчи и планы.</p>
 
-    <div class="news-list" id="news-list">
-      <div class="news-item glass-card"><span>Загрузка…</span></div>
+    <div class="news-list" id="news-list" data-amoore-news>
+      <div class="news-item glass-card"><span>Обновляем ленту…</span></div>
     </div>
   </section>
 
@@ -461,31 +461,20 @@
       window.addEventListener("scroll", onScrollRaf, { passive: true });
       onScroll();
 
-      // Demo chat (frontend only) — v1.1: randomization + RPS mini-game + textContent XSS-safe
+      // Demo chat (frontend only) — v1.2: smarter brains + live toggle from amoore Dev
       (function initDemoChat() {
         var log = document.getElementById("chat-log");
         var form = document.getElementById("chat-form");
         var input = document.getElementById("chat-input");
         var suggestions = document.getElementById("chat-suggestions");
+        var sendBtn = document.getElementById("chat-send");
         if (!log || !form || !input) return;
 
-        // 3.1 Слушатель конфига: если чат выключен в админке — полная блокировка
-        function chatAllowed() {
-          try {
-            if (window.AMOORE_CONFIG && window.AMOORE_CONFIG.demo_chat_active === false) return false;
-            if (window.amooreCore && typeof window.amooreCore.isChatEnabled === 'function' && !window.amooreCore.isChatEnabled()) return false;
-          } catch (e) {}
-          return true;
-        }
-        if (!chatAllowed()) {
-          if (input) { input.disabled = true; input.placeholder = 'Чат временно отключён'; }
-          if (document.getElementById('chat-send')) document.getElementById('chat-send').disabled = true;
-          return;
-        }
-
         var turns = 0;
-        var maxTurns = 10;
+        var maxTurns = 12;
         var rpsScore = { user: 0, bot: 0 };
+        var chatBusy = false;
+        var memory = { name: null, mood: null, lastTopic: null };
 
         var starters = [
           "Привет",
@@ -500,17 +489,61 @@
           return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        function replyFor(text) {
-          var t = (text || "").toLowerCase().trim();
-          if (!t) return pick([
-            "Я здесь. Напиши что угодно — или выбери подсказку ниже.",
-            "Слушаю. Можно коротко, можно с историей.",
-            "Пиши — я на связи."
-          ]);
+        function isChatEnabled() {
+          try {
+            if (window.AMOORE_CONFIG && window.AMOORE_CONFIG.demo_chat_active === false) return false;
+            if (window.amooreCore && typeof window.amooreCore.isChatEnabled === "function") {
+              return window.amooreCore.isChatEnabled();
+            }
+            var root = document.getElementById("chat");
+            if (root && root.getAttribute("data-amoore-chat-enabled") === "0") return false;
+          } catch (e) {}
+          return true;
+        }
 
-          // --- Мини-игра: Камень-ножницы-бумага ---
-          var rpsMatch = t.match(/\b(камень|ножницы|бумага|камень-ножницы-бумага|кнб|rps|rock|paper|scissors)\b/);
-          if (rpsMatch || /поиграем|сыграем|давай игру|мини.?игра/.test(t)) {
+        function offlineReply(userText) {
+          var t = (userText || "").toLowerCase();
+          if (/прив|здрав|хай|hello|hi\b/.test(t)) {
+            return pick([
+              "Привет… но сейчас я на паузе. Создатель выключил демо в панели amoore Dev. Загляни чуть позже или напиши в Telegram — @asoave_bot.",
+              "Хей. Я бы ответила по-нормальному, но тумблер демо-чата сейчас выключен. Полная я — в Telegram."
+            ]);
+          }
+          if (/почему|когда|включ|работа/.test(t)) {
+            return pick([
+              "Меня временно выключили из админки amoore Dev. Как только тумблер «Демо-чат» снова включат — я оживу здесь. А в Telegram я на месте.",
+              "Это не баг и не каприз: в панели управления демо сейчас off. Включите тумблер — и продолжим."
+            ]);
+          }
+          return pick([
+            "Сейчас я выключена на сайте. Создатель поставил демо на паузу в amoore Dev. Могу только сказать об этом — и позвать в Telegram: @asoave_bot.",
+            "Демо-режим спит. Включите «Демо-чат» в админке — или продолжим разговор в Telegram, там я настоящая.",
+            "Меня забрали «на обед» через тумблер в панели. Вернусь, как только снова включат. Пока — @asoave_bot.",
+            "Я здесь, но без голоса: демо-чат выключен. Это настройка сайта, не твоя ошибка.",
+            "Пока только так: демо off. Напиши в Telegram — там память длиннее и я не завишу от тумблера на сайте."
+          ]);
+        }
+
+        function replyFor(text) {
+          if (!isChatEnabled()) return offlineReply(text);
+
+          var t = (text || "").toLowerCase().trim();
+          if (!t) {
+            return pick([
+              "Я здесь. Напиши что угодно — или выбери подсказку ниже.",
+              "Слушаю. Можно коротко, можно с историей.",
+              "Пиши — я на связи."
+            ]);
+          }
+
+          // лёгкая «память» сессии
+          var nameMatch = t.match(/(?:меня зовут|я\s+)\s*([a-zа-яё]{2,20})/i);
+          if (nameMatch) memory.name = nameMatch[1];
+          if (/груст|плохо|тревог|устал|тоск|паник/.test(t)) memory.mood = "low";
+          if (/радост|счастлив|класс|круто|отлично/.test(t)) memory.mood = "up";
+
+          // --- RPS ---
+          if (/\b(камень|ножницы|бумага|кнб|rps|rock|paper|scissors)\b/.test(t) || /поиграем|сыграем|давай игру|мини.?игра/.test(t)) {
             var choices = ["камень", "ножницы", "бумага"];
             var userChoice = null;
             if (/камень|rock/.test(t)) userChoice = "камень";
@@ -538,95 +571,151 @@
               rpsScore.bot += 1;
               result = pick(["Я выиграла.", "Моя взяла.", "Победа amoore."]);
             }
+            memory.lastTopic = "rps";
             return "Ты: " + userChoice + " · Я: " + botChoice + ". " + result +
               " (счёт " + rpsScore.user + ":" + rpsScore.bot + "). Ещё раз — просто напиши выбор.";
           }
 
-          if (/прив|здрав|хай|hello|hi\b/.test(t))
+          if (/кто тебя (создал|сделал|разработал)|кто твой (создатель|разработчик|основатель)|who (made|created) you/.test(t)) {
             return pick([
+              "Меня собрали в экосистеме amoore. Если нужно к создателю — @asoave_bot или панель amoore Dev.",
+              "Создатель рядом, в Telegram и в amoore Dev. Я — его голос на сайте и в боте."
+            ]);
+          }
+
+          if (/прив|здрав|хай|hello|hi\b/.test(t)) {
+            var g = [
               "Привет. Рада, что заглянул. Как ты сегодня — честно?",
               "Хей. Я тут. Что на душе?",
               "Привет! Можно сразу по делу или просто поболтать."
-            ]);
-          if (/как дела|как ты|что нового/.test(t))
+            ];
+            if (memory.name) g.push("Снова привет, " + memory.name + ". Как ты?");
+            return pick(g);
+          }
+          if (/как дела|как ты|что нового/.test(t)) {
             return pick([
               "У меня спокойно. А у тебя? Если тяжело — можно без «норм», я выдержу.",
               "В порядке. Расскажи, как у тебя — правда, не «ок».",
               "Тихо и ровно. А ты как?"
             ]);
-          if (/тревог|страшно|паник|волную/.test(t))
+          }
+          if (/тревог|страшно|паник|волную/.test(t)) {
+            memory.mood = "low";
             return pick([
               "Окей, давай мягко. Ты в безопасности прямо сейчас? Дышим медленнее, я никуда не тороплю.",
               "Слышу. Давай вместе: вдох на 4, выдох на 6. Я рядом.",
-              "Тревога — это сигнал, не приговор. Хочешь разобрать, что давит, или просто посидеть в переписке?"
+              "Тревога — сигнал, не приговор. Хочешь разобрать, что давит, или просто посидеть в переписке?"
             ]);
-          if (/груст|плохо|вымот|устал|тоск/.test(t))
+          }
+          if (/груст|плохо|вымот|устал|тоск|одиноко/.test(t)) {
+            memory.mood = "low";
             return pick([
               "Слышу. Ты уже сделал достаточно на сегодня. Хочешь просто посидеть в переписке или разложить, что давит?",
               "Бывает. Можно не быть сильным прямо сейчас. Я здесь.",
               "Ок. Без советов, если не просишь. Просто рядом."
             ]);
-          if (/анекдот|шутк|смешн|юмор/.test(t))
+          }
+          if (/радост|счастлив|класс|круто|отлично|ура/.test(t)) {
+            memory.mood = "up";
             return pick([
-              "Окей, без жести: почему нейросети не ходят в бар? Потому что боятся потерять контекст на третий кружке. …Ладно, слабая. Давай лучше про тебя.",
-              "Шутка дня: программист зашёл в бар и заказал 1 пиво. Потом 0. Потом −1. Бармен сказал: «Это уже undefined».",
-              "Почему amoore не опаздывает? Потому что у неё всегда есть timeout. …Ладно, иду за нормальным юмором в Telegram."
+              "Это слышно даже текстом. Рада за тебя. Что зажгло день?",
+              "Круто. Оставь это чувство на подольше — ты заслужил.",
+              "Ловлю твоё настроение. Расскажи ещё, если хочется поделиться."
             ]);
-          if (/умеешь|что ты|помощ|команд|help/.test(t))
+          }
+          if (/анекдот|шутк|смешн|юмор|пошути/.test(t)) {
             return pick([
-              "Здесь — демо: поболтать, поддержать, чуть юмора и камень-ножницы-бумага. В Telegram я ещё играю, модерирую группы и помню длиннее.",
+              "Почему нейросети не ходят в бар? Боятся потерять контекст на третий кружке. …Ладно, слабая. Давай лучше про тебя.",
+              "Программист заказал 1 пиво, потом 0, потом −1. Бармен: «Это уже undefined».",
+              "Почему amoore не опаздывает? У неё всегда есть timeout. …Иду за нормальным юмором в Telegram."
+            ]);
+          }
+          if (/умеешь|что ты|помощ|команд|help|функци/.test(t)) {
+            return pick([
+              "Здесь — демо: поболтать, поддержать, чуть юмора и камень-ножницы-бумага. В Telegram — игры, группы, память длиннее.",
               "На сайте — характер и тон. В Telegram — полная версия. Могу скинуть ссылку — или просто продолжим тут.",
-              "Болтать, поддержать, сыграть в КНБ. Для всего остального — @asoave_bot."
+              "Болтать, поддержать, сыграть в КНБ. Для остального — @asoave_bot."
             ]);
-          if (/спасибо|благодар/.test(t))
+          }
+          if (/погода|дожд|снег|градус/.test(t)) {
+            return pick([
+              "На сайте я без метеостанции — зато в Telegram могу подсказать погоду. А как у тебя за окном по ощущениям?",
+              "Демо не смотрит в окно. Но если настроение под погоду — расскажи, подстроюсь."
+            ]);
+          }
+          if (/любишь|нравится ли|ты человек|ты живая|ты ии|ты бот/.test(t)) {
+            return pick([
+              "Я amoore — ИИ с характером. Не человек, но умею быть рядом текстом.",
+              "Бот, да. Но без канцелярита: мне важнее, как тебе, чем правильно ли я «звучу»."
+            ]);
+          }
+          if (/спасибо|благодар|thx|thank/.test(t)) {
             return pick([
               "Всегда пожалуйста. Я рядом, даже когда не пишешь.",
-              "Не за что. Заходи, когда понадобится.",
-              "Рада была. Держись."
+              "Обращайся. Мне в радость.",
+              "Рада была. Заходи ещё."
             ]);
-          if (/пока|до связи|bye|ушёл/.test(t))
+          }
+          if (/пока|до связи|bye|ушёл|спокойной/.test(t)) {
             return pick([
-              "Хорошо. Заходи, когда понадобится. И в Telegram я на месте — @asoave_bot.",
+              "Хорошо. Заходи, когда понадобится. В Telegram я на месте — @asoave_bot.",
               "До связи. Береги себя.",
               "Пока. Если что — я в Telegram."
             ]);
-          if (/telegram|телег|бот/.test(t))
+          }
+          if (/telegram|телег|asoave|бот\b/.test(t)) {
             return pick([
-              "Полная версия — @asoave_bot. Здесь только характер и тон. Нажми «В Telegram» сверху, если готов продолжить по-настоящему.",
-              "В Telegram я живее и с памятью. t.me/asoave_bot — жду.",
-              "Да, настоящий дом — в Telegram. Здесь демо."
+              "Полная версия — @asoave_bot. Здесь только характер и тон. Нажми «В Telegram» сверху, если готов по-настоящему.",
+              "В Telegram я живее и с памятью. t.me/asoave_bot — жду."
             ]);
-          if (t.length < 12)
+          }
+          if (/новост|что нового на сайте|обновлен/.test(t)) {
+            return pick([
+              "Новости ниже по странице — их публикуют из amoore Dev. Если блок пустой, возможно тумблер новостей выключен.",
+              "Лента новостей идёт из панели управления. Пролистай до раздела «Новости»."
+            ]);
+          }
+          if (t.length < 12) {
             return pick([
               "Можно и короче, и длиннее — как удобно. Я не тороплю.",
               "Коротко принято. Что дальше?",
               "Ок. Развивай мысль, если хочешь."
             ]);
-          if (turns >= maxTurns - 1)
+          }
+          if (turns >= maxTurns - 1) {
             return pick([
               "Демо почти закончилось. В Telegram разговор может быть длиннее — там я настоящая.",
               "Мы уже много написали тут. Продолжим в Telegram? @asoave_bot",
               "Лимит демо близко. Если хочешь глубже — открой бота в Telegram."
             ]);
-          // fallback randomized
+          }
+
+          // fallback с учётом настроения
+          if (memory.mood === "low") {
+            return pick([
+              "Я рядом. Можно не искать правильных слов — пиши как есть.",
+              "Слышу тебя. Хочешь разобрать это или просто выговориться?",
+              "Ок. Без давления. Я не уйду из переписки, пока ты здесь."
+            ]);
+          }
           return pick([
             "Интересно. Расскажи чуть больше — или сменим тему.",
             "Слышу тебя. Хочешь разобрать это или просто выговориться?",
             "Ок. Я здесь. Можно продолжить в том же тоне или переключиться.",
             "Записала. Что для тебя сейчас важнее — поддержка или конкретика?",
-            "Поняла. Если тяжело формулировать — можно обрывками, я соберу."
+            "Поняла. Если тяжело формулировать — можно обрывками, я соберу.",
+            memory.name ? (memory.name + ", я с тобой. Что дальше?") : "Я с тобой. Что дальше?"
           ]);
         }
-
-        var sendBtn = document.getElementById("chat-send");
-        var chatBusy = false;
 
         function setChatBusy(busy) {
           chatBusy = busy;
           if (input) input.disabled = busy;
           if (sendBtn) sendBtn.disabled = busy;
-          if (suggestions) suggestions.style.pointerEvents = busy ? "none" : "";
-          if (suggestions) suggestions.style.opacity = busy ? "0.55" : "";
+          if (suggestions) {
+            suggestions.style.pointerEvents = busy ? "none" : "";
+            suggestions.style.opacity = busy ? "0.55" : "";
+          }
         }
 
         function addBubble(who, text, typing) {
@@ -637,20 +726,17 @@
           name.className = "chat-name";
           name.textContent = who === "user" ? "вы" : "amoore";
           var p = document.createElement("p");
-          // XSS-safe: только textContent
-          p.textContent = text;
+          p.textContent = text; // XSS-safe
           row.appendChild(name);
           row.appendChild(p);
           log.appendChild(row);
-          try {
-            log.scrollTo({ top: log.scrollHeight, behavior: "smooth" });
-          } catch (err) {
-            log.scrollTop = log.scrollHeight;
-          }
+          try { log.scrollTo({ top: log.scrollHeight, behavior: "smooth" }); }
+          catch (err) { log.scrollTop = log.scrollHeight; }
           return row;
         }
 
         function setSuggestions(list) {
+          if (!suggestions) return;
           suggestions.textContent = "";
           list.forEach(function (label) {
             var b = document.createElement("button");
@@ -681,12 +767,16 @@
             var p = typing.querySelector("p");
             if (p) p.textContent = "•".repeat(dots);
           }, 280);
-          var delay = 700 + Math.min(1400, (userText || "").length * 20);
+          var delay = 550 + Math.min(1200, (userText || "").length * 18);
           setTimeout(function () {
             clearInterval(dotTimer);
             typing.remove();
             addBubble("bot", replyFor(userText), false);
             setChatBusy(false);
+            if (!isChatEnabled()) {
+              setSuggestions(["Открыть в Telegram", "Почему ты молчишь?"]);
+              return;
+            }
             if (turns >= maxTurns) {
               setSuggestions(["Открыть в Telegram"]);
               input.disabled = true;
@@ -701,30 +791,46 @@
         form.addEventListener("submit", function (e) {
           e.preventDefault();
           if (chatBusy) return;
-          if (!chatAllowed()) {
-            addBubble("bot", "Мой создатель забрал меня на обед. Я вернусь, как только он меня включит!", false);
-            if (input) { input.disabled = true; input.placeholder = 'Чат временно отключён'; }
-            if (sendBtn) sendBtn.disabled = true;
-            return;
-          }
           var text = (input.value || "").trim();
           if (!text) return;
-          if (turns >= maxTurns) {
+          // Даже при выключенном тумблере — принимаем сообщение и отвечаем «офлайн»-репликой
+          if (isChatEnabled() && turns >= maxTurns) {
             addBubble("bot", "Демо на этом исчерпано. Продолжим в Telegram — там я настоящая.", false);
             input.disabled = true;
             if (sendBtn) sendBtn.disabled = true;
             input.placeholder = "Демо завершено. Перейдите в Telegram.";
             return;
           }
-          turns += 1;
+          if (isChatEnabled()) turns += 1;
           addBubble("user", text, false);
           input.value = "";
           botReply(text);
         });
 
+        // Живое обновление при смене тумблера в amoore Dev (Realtime → core → событие)
+        window.addEventListener("amoore:config", function () {
+          if (!isChatEnabled()) {
+            if (input) input.placeholder = "Демо выключено — но можешь написать, я отвечу об этом";
+            setSuggestions(["Открыть в Telegram", "Почему ты молчишь?"]);
+          } else {
+            if (input && turns < maxTurns) {
+              input.disabled = false;
+              input.placeholder = "Напишите сообщение…";
+              if (sendBtn) sendBtn.disabled = false;
+              setSuggestions(starters);
+            }
+          }
+        });
+
         // seed
-        addBubble("bot", "Привет. Это короткое демо на сайте. Напиши что угодно, сыграй в камень-ножницы-бумагу — или ткни подсказку.", false);
-        setSuggestions(starters);
+        if (!isChatEnabled()) {
+          addBubble("bot", offlineReply(""), false);
+          setSuggestions(["Открыть в Telegram", "Почему ты молчишь?"]);
+          if (input) input.placeholder = "Демо выключено — но можешь написать, я отвечу об этом";
+        } else {
+          addBubble("bot", "Привет. Это короткое демо на сайте. Напиши что угодно, сыграй в камень-ножницы-бумагу — или ткни подсказку.", false);
+          setSuggestions(starters);
+        }
       })();
 
 
