@@ -10,7 +10,7 @@
 
   var SITE_ID  = window.AMOORE_SITE_ID   || 'landing';
   var SB_URL   = window.AMOORE_SUPABASE_URL  || 'https://wogouiecoigzmxqccnsk.supabase.co';
-  var SB_ANON  = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy';
+  var SB_ANON  = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
   var AUTH_KEY = 'amoore_dev_auth';
   var NEWS_SEL = window.AMOORE_NEWS_SELECTOR || '#news-list, .news-list, [data-amoore-news]';
 
@@ -115,6 +115,9 @@
     'box-sizing:border-box!important;',
     'font-family:Manrope,system-ui,-apple-system,sans-serif!important;',
     'background:#070b16!important;',
+    'transform:translateZ(0)!important;',
+    '-webkit-transform:translateZ(0)!important;',
+    'will-change:transform;',
     '}'
   ].join('');
 
@@ -168,6 +171,8 @@
       document.documentElement.classList.add('amoore-locked');
       document.body.classList.add('amoore-locked');
       // Только overflow/height — без position:fixed и top:-scrollY (ломает iOS WebView)
+      document.documentElement.style.background = '#070b16';
+      document.body.style.background = '#070b16';
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100dvh';
@@ -183,6 +188,8 @@
       document.body.style.overflow = '';
       document.body.style.height = '';
       document.documentElement.style.height = '';
+      document.documentElement.style.background = '';
+      document.body.style.background = '';
       if (window.__amoore_lock_scroll) {
         document.removeEventListener('touchmove', window.__amoore_lock_scroll, { passive: false });
         document.removeEventListener('touchstart', window.__amoore_lock_scroll, { passive: false });
