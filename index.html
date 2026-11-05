@@ -267,13 +267,9 @@
     <h2>Что нового</h2>
     <p class="section-lead">Обновления, патчи и планы.</p>
 
-    <div class="tabs" role="tablist">
-      <button class="tab" data-filter="all" aria-pressed="true">Все</button>
-      <button class="tab" data-filter="news" aria-pressed="false">Новости</button>
-      <button class="tab" data-filter="patch" aria-pressed="false">Патчи</button>
-      <button class="tab" data-filter="soon" aria-pressed="false">Скоро</button>
+    <div class="news-list" id="news-list">
+      <div class="news-item glass-card"><span>Загрузка…</span></div>
     </div>
-    <div class="news-list" id="news-list"></div>
   </section>
 
   <!-- FAQ -->
@@ -354,7 +350,6 @@
     </p>
   </footer>
 
-  <script src="news.js"></script>
   <script>
     (function () {
       var btn = document.getElementById("theme");
@@ -379,49 +374,6 @@
       };
       paintTheme();
 
-      var labels = { news: "Новость", patch: "Патч", soon: "Скоро" };
-      var list = document.getElementById("news-list");
-      var filter = "all";
-
-      function draw() {
-        list.textContent = "";
-        var data = (typeof NEWS !== "undefined" ? NEWS : []).filter(function (n) {
-          return filter === "all" || n.type === filter;
-        });
-        if (!data.length) {
-          var empty = document.createElement("div");
-          empty.className = "news-item glass-card";
-          empty.innerHTML = "<span>Здесь пока пусто.</span>";
-          list.appendChild(empty);
-          return;
-        }
-        data.forEach(function (n) {
-          var item = document.createElement("div");
-          item.className = "news-item glass-card";
-          var small = document.createElement("small");
-          small.textContent = [labels[n.type] || "", n.date || ""].filter(Boolean).join(" · ");
-          var title = document.createElement("b");
-          title.textContent = n.title || "";
-          var text = document.createElement("span");
-          text.textContent = n.text || "";
-          item.appendChild(small);
-          item.appendChild(title);
-          item.appendChild(text);
-          list.appendChild(item);
-        });
-      }
-
-      document.querySelectorAll(".tab").forEach(function (tab) {
-        tab.addEventListener("click", function () {
-          filter = tab.getAttribute("data-filter") || "all";
-          document.querySelectorAll(".tab").forEach(function (t) {
-            t.setAttribute("aria-pressed", t === tab ? "true" : "false");
-          });
-          draw();
-        });
-      });
-      draw();
-      window.amooreRedrawNews = draw; // amoore-core.js вызовет, когда придут новости из Supabase
 
       var menuBtn = document.getElementById("menu-toggle");
       var mobileNav = document.getElementById("mobile-nav");
@@ -789,11 +741,8 @@
       });
 
     })();
-  </script><script>
-  window.AMOORE_SITE_ID = 'landing';
-  window.AMOORE_SUPABASE_URL = 'https://wogouiecoigzmxqccnsk.supabase.co';
-  window.AMOORE_SUPABASE_ANON = 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
-</script>
+  </script>
+<script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="amoore-core.js"></script>
 </body>

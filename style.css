@@ -2174,3 +2174,19 @@ textarea {
 .anim-paused * {
   animation-play-state: paused !important;
 }
+
+/* ===== Clean Build v1.0: mobile / Telegram WebView hardening ===== */
+html, body { max-width: 100%; overflow-x: hidden; }
+img, video, svg { max-width: 100%; }
+input, select, textarea { font-size: 16px; }              /* iOS не зумит поля */
+.topbar { padding-top: env(safe-area-inset-top, 0px); }
+.mobile-cta { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+.amoore-hidden { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  /* тяжёлый blur лагает в Telegram WebView и на старых iPhone */
+  *, *::before, *::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .glass-card, .topbar.scrolled, .mobile-nav { background-color: color-mix(in srgb, var(--bg) 94%, transparent); }
+}

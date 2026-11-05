@@ -7,8 +7,9 @@
 /*.css
   Cache-Control: public, max-age=31536000, immutable
 
+# JS без версии в имени (amoore-core.js) — всегда проверяем свежесть
 /*.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
 /*.png
   Cache-Control: public, max-age=31536000, immutable
