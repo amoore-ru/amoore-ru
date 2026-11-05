@@ -176,7 +176,7 @@
       Небольшая экосистема, которая развивается и скоро сможет работать в разных направлениях.
     </p>
 
-    <div class="eco-grid">
+    <div class="eco-grid" data-amoore-ecosystem>
       <article class="eco-card glass-card reveal">
         <div class="eco-card-icon">✦</div>
         <h3>amoore AI</h3>
@@ -268,8 +268,27 @@
     <p class="section-lead">Обновления, патчи и планы.</p>
 
     <div class="news-list" id="news-list" data-amoore-news>
-      <div class="news-item glass-card"><span>Обновляем ленту…</span></div>
+      <div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div><div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div>
     </div>
+  </section>
+
+
+  <!-- Lead form -->
+  <section class="section reveal" id="lead">
+    <div class="section-index" aria-hidden="true">07</div>
+    <div class="section-label">Связь</div>
+    <h2>Оставить заявку</h2>
+    <p class="section-lead">Имя и Telegram — ответим лично.</p>
+    <form class="lead-form glass-card" id="lead-form" autocomplete="on">
+      <label class="sr-only" for="lead-name">Имя</label>
+      <input id="lead-name" name="name" required maxlength="80" placeholder="Имя" autocomplete="name">
+      <label class="sr-only" for="lead-contact">Telegram / телефон</label>
+      <input id="lead-contact" name="contact" required maxlength="120" placeholder="@telegram или телефон" autocomplete="tel">
+      <label class="sr-only" for="lead-message">Сообщение</label>
+      <textarea id="lead-message" name="message" maxlength="1000" rows="3" placeholder="Коротко, о чём речь (необязательно)"></textarea>
+      <button type="submit" class="btn btn-primary" id="lead-submit">Отправить</button>
+      <p class="muted" id="lead-status" role="status" style="min-height:1.2em;margin:8px 0 0"></p>
+    </form>
   </section>
 
   <!-- FAQ -->
@@ -461,6 +480,62 @@
       window.addEventListener("scroll", onScrollRaf, { passive: true });
       onScroll();
 
+      
+      // Lead form → Supabase leads
+      (function initLeadForm() {
+        var form = document.getElementById('lead-form');
+        if (!form) return;
+        var status = document.getElementById('lead-status');
+        var btn = document.getElementById('lead-submit');
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          var name = (document.getElementById('lead-name').value || '').trim();
+          var contact = (document.getElementById('lead-contact').value || '').trim();
+          var message = (document.getElementById('lead-message').value || '').trim();
+          if (!name || !contact) {
+            if (status) status.textContent = 'Заполните имя и контакт';
+            return;
+          }
+          if (btn) { btn.disabled = true; btn.textContent = 'Отправка…'; }
+          if (status) status.textContent = '';
+          try {
+            var SB_URL = (window.AMOORE_SUPABASE_URL || 'https://wogouiecoigzmxqccnsk.supabase.co').replace(/\/$/, '');
+            var SB_ANON = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
+            var res = await fetch(SB_URL + '/rest/v1/leads', {
+              method: 'POST',
+              headers: {
+                'apikey': SB_ANON,
+                'Authorization': 'Bearer ' + SB_ANON,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({ name: name.slice(0, 80), contact: contact.slice(0, 120), message: message.slice(0, 1000), status: 'new' })
+            });
+            if (!res.ok) throw new Error('http ' + res.status);
+            if (status) status.textContent = 'Отправлено. Мы скоро напишем.';
+            form.reset();
+          } catch (err) {
+            if (status) status.textContent = 'Не удалось отправить. Напишите в Telegram @asoave_bot';
+          } finally {
+            if (btn) { btn.disabled = false; btn.textContent = 'Отправить'; }
+          }
+        });
+      })();
+
+      
+      // Parallax hero + reduced motion
+      (function () {
+        var hero = document.querySelector('.hero');
+        if (!hero) return;
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce) return;
+        window.addEventListener('scroll', function () {
+          var y = window.scrollY || 0;
+          if (y > 600) return;
+          hero.style.transform = 'translateY(' + (y * 0.18) + 'px)';
+        }, { passive: true });
+      })();
+
       // Demo chat (frontend only) — v1.2: smarter brains + live toggle from amoore Dev
       (function initDemoChat() {
         var log = document.getElementById("chat-log");
@@ -481,8 +556,8 @@
           "Как дела?",
           "Мне тревожно",
           "Расскажи анекдот",
-          "Что ты умеешь?",
-          "Пока"
+          "Угадай число",
+          "Что ты умеешь?"
         ];
 
         function pick(arr) {
@@ -516,6 +591,7 @@
             ]);
           }
           return pick([
+            "Я ушел на перезагрузку. Скоро вернусь!",
             "Сейчас я выключена на сайте. Создатель поставил демо на паузу в amoore Dev. Могу только сказать об этом — и позвать в Telegram: @asoave_bot.",
             "Демо-режим спит. Включите «Демо-чат» в админке — или продолжим разговор в Telegram, там я настоящая.",
             "Меня забрали «на обед» через тумблер в панели. Вернусь, как только снова включат. Пока — @asoave_bot.",
@@ -576,7 +652,74 @@
               " (счёт " + rpsScore.user + ":" + rpsScore.bot + "). Ещё раз — просто напиши выбор.";
           }
 
-          if (/кто тебя (создал|сделал|разработал)|кто твой (создатель|разработчик|основатель)|who (made|created) you/.test(t)) {
+                    // --- Города ---
+          if (/^города$|играть в города|города:/.test(t) || memory.lastTopic === 'cities') {
+            var CITY_DB = ["москва","санкт-петербург","казань","новосибирск","екатеринбург","нижний новгород","самара","омск","ростов","уфа","красноярск","воронеж","пермь","волгоград","краснодар","саратов","тюмень","тольятти","ижевск","барнаул","иркутск","хабаровск","ярославль","владивосток","махачкала","томск","оренбург","кемерово","рязань","астрахань","пенза","липецк","киров","чебоксары","калининград","тула","курск","сочи","ставрополь","ульяновск","тверь","иваново","брянск","белгород","архангельск","владимир","смоленск","калуга","чита","смоленск","грозный","волжский","сургут","вологда","саранск","якутск","грозный","подольск"];
+            if (memory.lastTopic !== 'cities' || /города$|играть в города|заново/.test(t)) {
+              memory.lastTopic = 'cities';
+              memory.cityUsed = [];
+              memory.cityLast = null;
+              return "Играем в города! Пиши город России. Я отвечу на последнюю букву. «Стоп» — выход.";
+            }
+            if (/^стоп$|^выйти$|^хватит$/.test(t)) {
+              memory.lastTopic = null;
+              return "Ок, города на паузе. Чем ещё помочь?";
+            }
+            var city = t.replace(/[^a-zа-яё\-\s]/gi, '').trim().toLowerCase();
+            if (!city || city.length < 2) return "Напиши название города.";
+            if (CITY_DB.indexOf(city) < 0) return "Не знаю такой город в своей базе. Попробуй другой.";
+            if ((memory.cityUsed || []).indexOf(city) >= 0) return "Этот город уже был.";
+            if (memory.cityLast) {
+              var need = memory.cityLast.replace(/ъ|ь/g, '').slice(-1);
+              if (city[0] !== need) return "Нужен город на «" + need.toUpperCase() + "».";
+            }
+            memory.cityUsed = (memory.cityUsed || []).concat([city]);
+            memory.cityLast = city;
+            var last = city.replace(/ъ|ь/g, '').slice(-1);
+            var pool = CITY_DB.filter(function (c) {
+              return c[0] === last && memory.cityUsed.indexOf(c) < 0;
+            });
+            if (!pool.length) {
+              memory.lastTopic = null;
+              return "Не могу ответить — твоя победа! Сыграем ещё — напиши «города».";
+            }
+            var ans = pool[Math.floor(Math.random() * pool.length)];
+            memory.cityUsed.push(ans);
+            memory.cityLast = ans;
+            return "«" + city + "» принято. Мой ход: " + ans.charAt(0).toUpperCase() + ans.slice(1) + ". Тебе на «" + ans.replace(/ъ|ь/g, '').slice(-1).toUpperCase() + "».";
+          }
+
+          // --- Угадай число ---
+          if (/угадай (число|цифр)|числовая|загадай число|play number|guess/.test(t) || memory.lastTopic === 'number') {
+            if (memory.secret == null || /загадай|новая|ещё|еще|заново/.test(t)) {
+              memory.secret = 1 + Math.floor(Math.random() * 10);
+              memory.guesses = 0;
+              memory.lastTopic = 'number';
+              return pick([
+                "Загадала число от 1 до 10. Пиши цифру!",
+                "Ок, число 1…10 у меня в голове. Твой ход."
+              ]);
+            }
+            var num = parseInt(t.replace(/[^\d]/g, ''), 10);
+            if (!(num >= 1 && num <= 10)) {
+              return "Нужна цифра от 1 до 10 — или напиши «загадай» для новой игры.";
+            }
+            memory.guesses = (memory.guesses || 0) + 1;
+            if (num === memory.secret) {
+              var g = memory.guesses;
+              memory.secret = null;
+              memory.lastTopic = null;
+              return pick([
+                "Да! Это " + num + ". Угадала за " + g + " ход(а). Ещё — напиши «загадай число».",
+                "В точку. " + num + " было верным. Раунд за тобой."
+              ]);
+            }
+            return num < memory.secret
+              ? pick(["Больше.", "Маловато. Попробуй выше."])
+              : pick(["Меньше.", "Слишком много."]);
+          }
+
+                    if (/кто тебя (создал|сделал|разработал)|кто твой (создатель|разработчик|основатель)|who (made|created) you/.test(t)) {
             return pick([
               "Меня собрали в экосистеме amoore. Если нужно к создателю — @asoave_bot или панель amoore Dev.",
               "Создатель рядом, в Telegram и в amoore Dev. Я — его голос на сайте и в боте."

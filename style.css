@@ -2190,3 +2190,34 @@ input, select, textarea { font-size: 16px; }              /* iOS не зумит
   }
   .glass-card, .topbar.scrolled, .mobile-nav { background-color: color-mix(in srgb, var(--bg) 94%, transparent); }
 }
+
+
+/* v2 Evolve — mobile + spring */
+input, textarea, select, button { font-size: 16px; }
+.btn, .chip, .toggle, a.btn { transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, background .25s ease; }
+.btn:active, .chip:active { transform: scale(.97); }
+.glass-card { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+@media (max-width: 640px) {
+  .btn, .chip, #chat-send { min-height: 44px; }
+}
+
+.lead-form{display:grid;gap:12px;max-width:480px;padding:20px}
+.lead-form input,.lead-form textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);color:inherit;font:inherit;font-size:16px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .hero { transform: none !important; }
+}
+
+
+/* v0.3: offline state + iOS viewport hardening */
+#amoore-network-notice { position: fixed; z-index: 99999; top: max(10px, env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 24px)); padding: 12px 16px; border: 1px solid rgba(248,113,113,.5); border-radius: 14px; background: #35151b; color: #fff; box-shadow: 0 12px 36px rgba(0,0,0,.35); font: 600 14px/1.4 system-ui,sans-serif; text-align: center; }
+#amoore-network-notice[hidden] { display: none; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+input, textarea, select { font-size: 16px; }
+body { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* v0.4 premium polish */
+:root{scroll-padding-top:80px}button,.btn,.toggle,.site-card,.eco-card,.news-item{transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .28s ease,filter .2s ease}button:active,.btn:active{transform:scale(.97)}@media(hover:hover){.site-card:hover,.eco-card:hover,.news-item:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(20,15,35,.12)}}.skeleton,.news-skeleton{display:block;border-radius:12px;background:linear-gradient(90deg,rgba(130,130,145,.10),rgba(130,130,145,.20),rgba(130,130,145,.10));background-size:200% 100%;animation:amoore-shimmer 1.35s ease-in-out infinite}.skeleton-line{height:14px;width:min(100%,360px);margin:10px 0}.news-skeleton{padding:18px;margin:10px 0;min-height:112px}.news-skeleton i,.news-skeleton b,.news-skeleton span{display:block;height:10px;border-radius:8px;background:rgba(130,130,145,.16);margin:8px 0}.news-skeleton i{width:22%}.news-skeleton b{width:58%;height:16px}.news-skeleton span{width:88%}@keyframes amoore-shimmer{to{background-position:-200% 0}}.onboarding-card{display:flex;gap:18px;align-items:center;justify-content:space-between;padding:20px;margin:0 0 22px;border:1px solid rgba(169,139,76,.35)}.onboarding-checks{display:grid;gap:7px;margin-top:12px}.onboarding-check{display:grid;grid-template-columns:22px minmax(110px,auto) 1fr;gap:8px;align-items:center;font-size:13px}.onboarding-check span{font-weight:800;color:#55b88a}.onboarding-check small{opacity:.72}.onboarding-actions{display:flex;flex-wrap:wrap;gap:8px}.amoore-faq{display:grid;gap:10px;max-width:860px;margin:22px auto}.amoore-faq details{border:1px solid var(--border,rgba(130,130,145,.22));border-radius:16px;padding:16px 18px;background:var(--card,rgba(255,255,255,.04))}.amoore-faq summary{cursor:pointer;font-weight:650;list-style:none}.amoore-faq summary::-webkit-details-marker{display:none}.amoore-faq summary:after{content:'+';float:right;transition:transform .25s}.amoore-faq details[open] summary:after{transform:rotate(45deg)}.amoore-faq p{margin:12px 0 0;opacity:.82;line-height:1.65}.live-chat-tg:hover{box-shadow:0 0 0 5px rgba(42,171,238,.12),0 0 28px rgba(42,171,238,.35);filter:brightness(1.08)}.live-chat-tg:hover:before{animation:amoore-telegram-wiggle .55s ease-in-out}@keyframes amoore-telegram-wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-13deg)}75%{transform:rotate(13deg)}}input,textarea,select{font-size:16px}@media(max-width:680px){.onboarding-card{display:block}.onboarding-actions{margin-top:14px}.onboarding-check{grid-template-columns:22px 1fr}.onboarding-check small{grid-column:2}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.toggle-knob{transition:transform .42s cubic-bezier(.34,1.56,.64,1)}.skeleton-stack{display:grid;gap:10px;padding:12px}.skeleton-stack i{display:block;height:48px;border-radius:12px;background:linear-gradient(90deg,rgba(140,150,170,.10),rgba(170,180,200,.22),rgba(140,150,170,.10));background-size:200% 100%;animation:amoore-shimmer 1.35s ease-in-out infinite}.main,.app-shell{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}@media(prefers-reduced-motion:reduce){.skeleton-stack i{animation:none}}
