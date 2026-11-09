@@ -1,24 +1,16 @@
-# Cloudflare Pages / Netlify
-# CSS и JS без хэша в имени ВСЕГДА перепроверяем (ETag): раньше style.css был «immutable на год»,
-# из-за чего браузеры держали старые стили (форма заявки без оформления, невидимые скелетоны новостей).
+# Cloudflare Pages / Netlify style
 /*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
 /*.css
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 
+# JS без версии в имени (amoore-core.js) — всегда проверяем свежесть
 /*.js
   Cache-Control: public, max-age=0, must-revalidate
 
-/*.json
-  Cache-Control: public, max-age=0, must-revalidate
-
-/index.html
-  Cache-Control: public, max-age=0, must-revalidate
-
-# Картинки меняются редко — кэшируем надолго
 /*.png
   Cache-Control: public, max-age=31536000, immutable
 
@@ -27,3 +19,6 @@
 
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate

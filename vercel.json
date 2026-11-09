@@ -1,20 +1,11 @@
 {
   "headers": [
     {
-      "source": "/(.*)\\.(png|webp|woff2|ico)",
+      "source": "/(.*)\\.(css|png|webp|woff2|ico)",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)\\.(css|json)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
         }
       ]
     },
