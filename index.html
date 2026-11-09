@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
 
-  <title>amoore - ecosystem</title>
+  <title>amoore | AI companion</title>
 
   <meta name="description" content="amoore — тёплый ИИ-бот в Telegram: общение, игры, помощь и управление группами.">
   <meta name="theme-color" content="#070b16" media="(prefers-color-scheme: dark)">
@@ -19,14 +19,16 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://amoore-ru.github.io/">
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
     try {
@@ -35,7 +37,8 @@
     } catch (e) {}
   </script>
 
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=4.0.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=4.0.0">
 </head>
 
 <body>
@@ -267,29 +270,19 @@
     <h2>Что нового</h2>
     <p class="section-lead">Обновления, патчи и планы.</p>
 
+    <div class="tabs news-tabs" id="news-tabs" role="tablist" aria-label="Фильтр новостей" hidden>
+      <button type="button" class="tab is-active" role="tab" data-filter="all" aria-selected="true" aria-pressed="true">Все <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="digest" aria-selected="false" aria-pressed="false" tabindex="-1">Дайджесты <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="news" aria-selected="false" aria-pressed="false" tabindex="-1">Обновления <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="patch" aria-selected="false" aria-pressed="false" tabindex="-1">Патчи <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="soon" aria-selected="false" aria-pressed="false" tabindex="-1">Планы <span class="news-count" aria-hidden="true"></span></button>
+    </div>
+
     <div class="news-list" id="news-list" data-amoore-news>
       <div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div><div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div>
     </div>
   </section>
 
-
-  <!-- Lead form -->
-  <section class="section reveal" id="lead">
-    <div class="section-index" aria-hidden="true">07</div>
-    <div class="section-label">Связь</div>
-    <h2>Оставить заявку</h2>
-    <p class="section-lead">Имя и Telegram — ответим лично.</p>
-    <form class="lead-form glass-card" id="lead-form" autocomplete="on">
-      <label class="sr-only" for="lead-name">Имя</label>
-      <input id="lead-name" name="name" required maxlength="80" placeholder="Имя" autocomplete="name">
-      <label class="sr-only" for="lead-contact">Telegram / телефон</label>
-      <input id="lead-contact" name="contact" required maxlength="120" placeholder="@telegram или телефон" autocomplete="tel">
-      <label class="sr-only" for="lead-message">Сообщение</label>
-      <textarea id="lead-message" name="message" maxlength="1000" rows="3" placeholder="Коротко, о чём речь (необязательно)"></textarea>
-      <button type="submit" class="btn btn-primary" id="lead-submit">Отправить</button>
-      <p class="muted" id="lead-status" role="status" style="min-height:1.2em;margin:8px 0 0"></p>
-    </form>
-  </section>
 
   <!-- FAQ -->
   <section class="section reveal" id="faq">
@@ -343,6 +336,28 @@
         <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">t.me/asoave_bot</a>
       </div>
     </div>
+
+    <div class="lead-block" id="lead">
+      <h3 class="lead-title">Или оставьте заявку</h3>
+      <p class="lead-sub">Имя и Telegram — ответим лично, обычно в тот же день.</p>
+      <form class="lead-form glass-card" id="lead-form" autocomplete="on" novalidate>
+        <div class="lead-field">
+          <label for="lead-name">Имя</label>
+          <input id="lead-name" name="name" required minlength="2" maxlength="80" placeholder="Как к вам обращаться" autocomplete="name">
+        </div>
+        <div class="lead-field">
+          <label for="lead-contact">Telegram, телефон или email</label>
+          <input id="lead-contact" name="contact" required maxlength="120" placeholder="@telegram" autocomplete="off" autocapitalize="none" spellcheck="false">
+        </div>
+        <div class="lead-field">
+          <label for="lead-message">Сообщение <span class="lead-opt">необязательно</span></label>
+          <textarea id="lead-message" name="message" maxlength="1000" rows="3" placeholder="Коротко, о чём речь"></textarea>
+        </div>
+        <div class="lead-hp" aria-hidden="true"><label>Не заполняйте <input id="lead-hp" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button type="submit" class="btn btn-primary lead-submit" id="lead-submit">Отправить заявку</button>
+        <p class="lead-status" id="lead-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
   </section>
 
   <!-- CTA -->
@@ -367,7 +382,12 @@
       ·
       <a href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">Studio</a>
     </p>
+    <p class="footer-version">
+      <button type="button" class="version-btn" id="version-btn" aria-haspopup="dialog">Версия <span data-amoore-version>4.0.0</span> · история обновлений</button>
+    </p>
   </footer>
+
+  <!-- История обновлений: модалка создаётся ядром (amoore-core.js → openChangelog), данные из БД -->
 
   <script>
     (function () {
@@ -479,48 +499,6 @@
       }
       window.addEventListener("scroll", onScrollRaf, { passive: true });
       onScroll();
-
-      
-      // Lead form → Supabase leads
-      (function initLeadForm() {
-        var form = document.getElementById('lead-form');
-        if (!form) return;
-        var status = document.getElementById('lead-status');
-        var btn = document.getElementById('lead-submit');
-        form.addEventListener('submit', async function (e) {
-          e.preventDefault();
-          var name = (document.getElementById('lead-name').value || '').trim();
-          var contact = (document.getElementById('lead-contact').value || '').trim();
-          var message = (document.getElementById('lead-message').value || '').trim();
-          if (!name || !contact) {
-            if (status) status.textContent = 'Заполните имя и контакт';
-            return;
-          }
-          if (btn) { btn.disabled = true; btn.textContent = 'Отправка…'; }
-          if (status) status.textContent = '';
-          try {
-            var SB_URL = (window.AMOORE_SUPABASE_URL || 'https://wogouiecoigzmxqccnsk.supabase.co').replace(/\/$/, '');
-            var SB_ANON = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
-            var res = await fetch(SB_URL + '/rest/v1/leads', {
-              method: 'POST',
-              headers: {
-                'apikey': SB_ANON,
-                'Authorization': 'Bearer ' + SB_ANON,
-                'Content-Type': 'application/json',
-                'Prefer': 'return=minimal'
-              },
-              body: JSON.stringify({ name: name.slice(0, 80), contact: contact.slice(0, 120), message: message.slice(0, 1000), status: 'new' })
-            });
-            if (!res.ok) throw new Error('http ' + res.status);
-            if (status) status.textContent = 'Отправлено. Мы скоро напишем.';
-            form.reset();
-          } catch (err) {
-            if (status) status.textContent = 'Не удалось отправить. Напишите в Telegram @asoave_bot';
-          } finally {
-            if (btn) { btn.disabled = false; btn.textContent = 'Отправить'; }
-          }
-        });
-      })();
 
       
       // Parallax hero + reduced motion
@@ -1103,6 +1081,7 @@
   </script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=9.1"></script>
+<script src="amoore-core.js?v=4.0.0"></script>
+<script src="landing.js?v=4.0.0" defer></script>
 </body>
 </html>

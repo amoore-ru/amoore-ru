@@ -1,9 +1,9 @@
 /**
- * landing.js — v3.0.0 «Singularity» (лендинг amoore-ru)
+ * landing.js — v4.0.0 «NEXUS» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
- *   2. История обновлений: кнопка в подвале → модалка из changelog.json
- *   3. Кастомный курсор (точка + золотой шлейф) — только мышь, без reduced-motion
+ *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
+ *   3. Вкладки-фильтры новостей (Все / Обновления / Патчи / Планы)
  *   4. Меню-бургер «как в нативном приложении»: Esc, свайп вниз, возврат фокуса
  * Скрипт не зависит от Supabase напрямую: всё идёт через window.amooreCore (amoore-core.js).
  */
@@ -11,7 +11,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '3.0.0';
+  var VERSION = window.AMOORE_VERSION || '4.0.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -88,110 +88,86 @@
   })();
 
   // ------------------------------------------------------------------ 2. история обновлений
+  // Модалку и данные (global_settings.changelog → changelog.json → v4.0.0) даёт amoore-core.js,
+  // поэтому лендинг и студия показывают одну и ту же историю в одном и том же окне.
   (function changelog() {
-    var openBtn = $('version-btn'), modal = $('changelog-modal'), body = $('changelog-body'), close = $('changelog-close');
-    if (!openBtn || !modal) return;
-    var lastFocus = null, loaded = false;
-
-    function render(list) {
-      body.textContent = '';
-      list.forEach(function (v) {
-        var sec = document.createElement('section'); sec.className = 'changelog-entry';
-        var h = document.createElement('h3');
-        h.textContent = 'v' + v.version + ' ';
-        if (v.title) { var sm = document.createElement('small'); sm.textContent = v.title; h.appendChild(sm); }
-        if (v.date) { var dt = document.createElement('time'); dt.textContent = v.date.split('-').reverse().join('.'); h.appendChild(dt); }
-        sec.appendChild(h);
-        var ul = document.createElement('ul');
-        (v.items || []).forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
-        sec.appendChild(ul);
-        body.appendChild(sec);
-      });
-    }
-
-    async function open() {
-      lastFocus = document.activeElement;
-      modal.hidden = false;
-      requestAnimationFrame(function () { modal.classList.add('open'); });
-      document.documentElement.classList.add('modal-open');
-      close.focus();
-      if (!loaded && window.amooreCore && window.amooreCore.fetchChangelog) {
-        var list = await window.amooreCore.fetchChangelog('changelog.json?v=' + VERSION);
-        if (list.length) { render(list); loaded = true; }
-      }
-    }
-    function shut() {
-      modal.classList.remove('open');
-      document.documentElement.classList.remove('modal-open');
-      setTimeout(function () { modal.hidden = true; }, 220);
-      if (lastFocus && lastFocus.focus) lastFocus.focus();
-    }
-    openBtn.addEventListener('click', open);
-    close.addEventListener('click', shut);
-    modal.addEventListener('click', function (e) { if (e.target === modal) shut(); });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !modal.hidden) shut();
-      // Простая «ловушка» фокуса внутри модалки
-      if (e.key === 'Tab' && !modal.hidden) {
-        var f = modal.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])');
-        if (!f.length) return;
-        var first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      }
+    var openBtn = $('version-btn');
+    if (!openBtn) return;
+    openBtn.addEventListener('click', function () {
+      if (window.amooreCore && window.amooreCore.openChangelog) window.amooreCore.openChangelog();
     });
   })();
 
-  // ------------------------------------------------------------------ 3. кастомный курсор
-  (function cursor() {
-    var fine = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
-    var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!fine || reduce) return;
+  // ------------------------------------------------------------------ 3. вкладки-фильтры новостей
+  // Все · Дайджесты (type=digest) · Обновления (type=news) · Патчи (type=patch) · Планы (type=soon). Список перестраивается без перезагрузки:
+  // лишние карточки плавно гаснут, нужные — появляются каскадом. Порядок «самое свежее сверху» задаёт amoore-core.js.
+  (function newsTabs() {
+    var tabsBox = $('news-tabs'), list = $('news-list');
+    if (!tabsBox || !list) return;
+    var tabs = Array.prototype.slice.call(tabsBox.querySelectorAll('[data-filter]'));
+    var current = 'all', reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var timers = [];
 
-    var TRAIL = 9;                         // длина золотого шлейфа
-    var root = document.createElement('div');
-    root.id = 'amoore-cursor'; root.setAttribute('aria-hidden', 'true');
-    var dot = document.createElement('i'); dot.className = 'amoore-cursor-dot';
-    var trail = [];
-    for (var i = 0; i < TRAIL; i++) {
-      var t = document.createElement('i'); t.className = 'amoore-cursor-trail';
-      t.style.setProperty('--k', String(1 - i / TRAIL));
-      root.appendChild(t); trail.push({ el: t, x: -50, y: -50 });
+    function cards() { return Array.prototype.slice.call(list.querySelectorAll('.news-item[data-type]')); }
+    function matches(el) { return current === 'all' || el.getAttribute('data-type') === current; }
+
+    function counts() {
+      var c = { all: 0, digest: 0, news: 0, patch: 0, soon: 0 };
+      cards().forEach(function (el) { c.all++; var t = el.getAttribute('data-type'); if (c[t] !== undefined) c[t]++; });
+      tabs.forEach(function (b) { var n = b.querySelector('.news-count'); if (n) n.textContent = c[b.getAttribute('data-filter')]; });
+      tabsBox.hidden = c.all === 0;       // пока нет реальных новостей (скелетон/заглушка) — вкладки скрыты
+      return c;
     }
-    root.appendChild(dot);
-    document.body.appendChild(root);
-    document.documentElement.classList.add('has-amoore-cursor');
 
-    var mx = -50, my = -50, big = false, visible = false, raf = 0;
-    var HOT = 'a, button, .btn, [role="button"], summary, label[for], .cmd-card, .chip, [data-copy], .theme-btn, .menu-toggle, select';
-
-    window.addEventListener('mousemove', function (e) {
-      mx = e.clientX; my = e.clientY;
-      if (!visible) { visible = true; root.classList.add('on'); trail.forEach(function (p) { p.x = mx; p.y = my; }); }
-      var hot = e.target && e.target.closest ? !!e.target.closest(HOT) : false;
-      var text = e.target && e.target.closest ? !!e.target.closest('input, textarea, [contenteditable]') : false;
-      if (hot !== big) { big = hot; root.classList.toggle('big', big); }
-      root.classList.toggle('text', text);          // над полем ввода показываем системный курсор
-      if (!raf) raf = requestAnimationFrame(loop);
-    }, { passive: true });
-    document.addEventListener('mouseleave', function () { visible = false; root.classList.remove('on'); });
-    document.addEventListener('mousedown', function () { root.classList.add('down'); });
-    document.addEventListener('mouseup', function () { root.classList.remove('down'); });
-
-    // Каждый сегмент шлейфа догоняет предыдущий (lerp) — получается плавный хвост
-    function loop() {
-      raf = 0;
-      dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)';
-      var px = mx, py = my, moving = false;
-      for (var i = 0; i < trail.length; i++) {
-        var p = trail[i];
-        p.x += (px - p.x) * 0.42; p.y += (py - p.y) * 0.42;
-        p.el.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0)';
-        if (Math.abs(px - p.x) > 0.3 || Math.abs(py - p.y) > 0.3) moving = true;
-        px = p.x; py = p.y;
-      }
-      if (moving && visible) raf = requestAnimationFrame(loop);
+    function emptyNote(show) {
+      var note = list.querySelector('.news-empty');
+      if (show && !note) {
+        note = document.createElement('div'); note.className = 'news-empty glass-card';
+        note.textContent = 'В этой категории пока ничего нет.'; list.appendChild(note);
+      } else if (!show && note) note.remove();
     }
+
+    // animate=false — мгновенно (после перерисовки списка ядром)
+    function apply(animate) {
+      timers.forEach(clearTimeout); timers = [];
+      var c = counts(), order = 0, visible = 0;
+      cards().forEach(function (el) {
+        var show = matches(el);
+        if (show) visible++;
+        if (!animate || reduce) { el.hidden = !show; el.classList.remove('is-leaving', 'is-entering'); el.style.removeProperty('--i'); return; }
+        if (show && el.hidden) {                       // появляется
+          el.hidden = false; el.style.setProperty('--i', order++); el.classList.remove('is-leaving'); el.classList.add('is-entering');
+          timers.push(setTimeout(function () { el.classList.remove('is-entering'); }, 520));
+        } else if (show) { el.classList.remove('is-leaving'); }
+        else if (!el.hidden) {                         // исчезает
+          el.classList.add('is-leaving'); el.classList.remove('is-entering');
+          timers.push(setTimeout(function () { el.hidden = true; el.classList.remove('is-leaving'); }, 200));
+        }
+      });
+      emptyNote(c.all > 0 && visible === 0);
+    }
+
+    function select(filter, focus) {
+      current = filter;
+      tabs.forEach(function (b) {
+        var on = b.getAttribute('data-filter') === filter;
+        b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1; if (on && focus) b.focus();
+      });
+      apply(true);
+    }
+
+    tabs.forEach(function (b, i) {
+      b.addEventListener('click', function () { select(b.getAttribute('data-filter'), false); });
+      b.addEventListener('keydown', function (e) {      // стрелки ← → Home End — как в нативных вкладках
+        var k = e.key, n = tabs.length, j = -1;
+        if (k === 'ArrowRight') j = (i + 1) % n; else if (k === 'ArrowLeft') j = (i - 1 + n) % n; else if (k === 'Home') j = 0; else if (k === 'End') j = n - 1;
+        if (j >= 0) { e.preventDefault(); select(tabs[j].getAttribute('data-filter'), true); }
+      });
+    });
+    // Ядро перерисовало список (Realtime, кэш, повтор) — применяем текущий фильтр заново
+    document.addEventListener('amoore:news', function () { apply(false); });
+    select('all', false); apply(false);
   })();
 
   // ------------------------------------------------------------------ 4. мобильное меню
