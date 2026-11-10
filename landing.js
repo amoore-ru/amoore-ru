@@ -1,5 +1,5 @@
 /**
- * landing.js — v4.0.0 «NEXUS» (лендинг amoore-ru)
+ * landing.js — v4.2.0 «NEXUS TOTAL FIX» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -11,7 +11,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '4.0.0';
+  var VERSION = window.AMOORE_VERSION || '4.2.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -109,13 +109,18 @@
     var timers = [];
 
     function cards() { return Array.prototype.slice.call(list.querySelectorAll('.news-item[data-type]')); }
-    function matches(el) { return current === 'all' || el.getAttribute('data-type') === current; }
+    // ЖЁСТКИЙ фильтр: «Все» — всё, КРОМЕ дайджестов; остальные вкладки — строго свой type
+    function matches(el) {
+      var t = el.getAttribute('data-type');
+      return current === 'all' ? t !== 'digest' : t === current;
+    }
 
     function counts() {
-      var c = { all: 0, digest: 0, news: 0, patch: 0, soon: 0 };
-      cards().forEach(function (el) { c.all++; var t = el.getAttribute('data-type'); if (c[t] !== undefined) c[t]++; });
+      var c = { all: 0, digest: 0, news: 0, patch: 0, soon: 0 }, total = 0;
+      cards().forEach(function (el) { total++; var t = el.getAttribute('data-type'); if (c[t] !== undefined) c[t]++; if (t !== 'digest') c.all++; });
       tabs.forEach(function (b) { var n = b.querySelector('.news-count'); if (n) n.textContent = c[b.getAttribute('data-filter')]; });
-      tabsBox.hidden = c.all === 0;       // пока нет реальных новостей (скелетон/заглушка) — вкладки скрыты
+      tabsBox.hidden = total === 0;       // пока нет реальных новостей (скелетон/заглушка) — вкладки скрыты
+      c.total = total;
       return c;
     }
 
@@ -127,24 +132,18 @@
       } else if (!show && note) note.remove();
     }
 
-    // animate=false — мгновенно (после перерисовки списка ядром)
-    function apply(animate) {
+    // Без анимаций и таймеров: карточка либо видна, либо скрыта (hidden + display:none) — никаких «зависших» карточек
+    function apply() {
       timers.forEach(clearTimeout); timers = [];
-      var c = counts(), order = 0, visible = 0;
+      var c = counts(), visible = 0;
       cards().forEach(function (el) {
         var show = matches(el);
         if (show) visible++;
-        if (!animate || reduce) { el.hidden = !show; el.classList.remove('is-leaving', 'is-entering'); el.style.removeProperty('--i'); return; }
-        if (show && el.hidden) {                       // появляется
-          el.hidden = false; el.style.setProperty('--i', order++); el.classList.remove('is-leaving'); el.classList.add('is-entering');
-          timers.push(setTimeout(function () { el.classList.remove('is-entering'); }, 520));
-        } else if (show) { el.classList.remove('is-leaving'); }
-        else if (!el.hidden) {                         // исчезает
-          el.classList.add('is-leaving'); el.classList.remove('is-entering');
-          timers.push(setTimeout(function () { el.hidden = true; el.classList.remove('is-leaving'); }, 200));
-        }
+        el.hidden = !show;
+        el.style.display = show ? '' : 'none';
+        el.classList.remove('is-leaving', 'is-entering');
       });
-      emptyNote(c.all > 0 && visible === 0);
+      emptyNote(c.total > 0 && visible === 0);
     }
 
     function select(filter, focus) {
@@ -154,7 +153,7 @@
         b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.setAttribute('aria-pressed', on ? 'true' : 'false');
         b.tabIndex = on ? 0 : -1; if (on && focus) b.focus();
       });
-      apply(true);
+      apply();
     }
 
     tabs.forEach(function (b, i) {
@@ -166,8 +165,8 @@
       });
     });
     // Ядро перерисовало список (Realtime, кэш, повтор) — применяем текущий фильтр заново
-    document.addEventListener('amoore:news', function () { apply(false); });
-    select('all', false); apply(false);
+    document.addEventListener('amoore:news', function () { apply(); });
+    select('all', false);
   })();
 
   // ------------------------------------------------------------------ 4. мобильное меню

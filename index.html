@@ -37,8 +37,8 @@
     } catch (e) {}
   </script>
 
-  <link rel="stylesheet" href="style.css?v=4.0.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=4.0.0">
+  <link rel="stylesheet" href="style.css?v=4.2.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=4.2.0">
 </head>
 
 <body>
@@ -383,7 +383,7 @@
       <a href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">Studio</a>
     </p>
     <p class="footer-version">
-      <button type="button" class="version-btn" id="version-btn" aria-haspopup="dialog">Версия <span data-amoore-version>4.0.0</span> · история обновлений</button>
+      <button type="button" class="version-btn" id="version-btn" aria-haspopup="dialog">Версия <span data-amoore-version>4.2.0</span> · история обновлений</button>
     </p>
   </footer>
 
@@ -909,7 +909,7 @@
           }, delay);
         }
 
-        form.addEventListener("submit", function (e) {
+        function onSubmit(e) {
           e.preventDefault();
           if (chatBusy) return;
           var text = (input.value || "").trim();
@@ -926,7 +926,24 @@
           addBubble("user", text, false);
           input.value = "";
           botReply(text);
-        });
+        }
+
+        // Перевешиваем обработчик формы: после выключения/включения тумблера чат всегда оживает
+        function bindForm() {
+          form.removeEventListener("submit", onSubmit);
+          form.addEventListener("submit", onSubmit);
+        }
+        function rebind() {
+          chatBusy = false;
+          if (suggestions) { suggestions.style.pointerEvents = ""; suggestions.style.opacity = ""; }
+          if (isChatEnabled() && turns < maxTurns) {
+            if (input) { input.disabled = false; input.removeAttribute("aria-disabled"); if (!input.placeholder || input.placeholder === "Чат на паузе" || /^Демо выключено/.test(input.placeholder)) input.placeholder = "Напишите сообщение…"; }
+            if (sendBtn) { sendBtn.disabled = false; sendBtn.removeAttribute("aria-disabled"); }
+          }
+          bindForm();
+        }
+        bindForm();
+        window.amooreDemoChat = { rebind: rebind };
 
         // Живое обновление при смене тумблера в amoore Dev (Realtime → core → событие)
         window.addEventListener("amoore:config", function () {
@@ -940,6 +957,7 @@
               if (sendBtn) sendBtn.disabled = false;
               setSuggestions(starters);
             }
+            rebind();
           }
         });
 
@@ -1081,7 +1099,7 @@
   </script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=4.0.0"></script>
-<script src="landing.js?v=4.0.0" defer></script>
+<script src="amoore-core.js?v=4.2.0"></script>
+<script src="landing.js?v=4.2.0" defer></script>
 </body>
 </html>
