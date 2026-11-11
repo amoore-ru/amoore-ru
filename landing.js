@@ -1,5 +1,5 @@
 /**
- * landing.js — v4.2.0 «NEXUS TOTAL FIX» (лендинг amoore-ru)
+ * landing.js — v4.3.0 «POLISH» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -11,7 +11,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '4.2.0';
+  var VERSION = window.AMOORE_VERSION || '4.3.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -167,35 +167,5 @@
     // Ядро перерисовало список (Realtime, кэш, повтор) — применяем текущий фильтр заново
     document.addEventListener('amoore:news', function () { apply(); });
     select('all', false);
-  })();
-
-  // ------------------------------------------------------------------ 4. мобильное меню
-  (function menu() {
-    var btn = $('menu-toggle'), nav = $('mobile-nav');
-    if (!btn || !nav) return;
-    var lastFocus = null;
-    function isOpen() { return nav.classList.contains('open'); }
-    function closeMenu() { if (isOpen()) btn.click(); }
-
-    btn.addEventListener('click', function () {
-      // состояние переключает inline-скрипт страницы; тут — доступность и фокус
-      setTimeout(function () {
-        if (isOpen()) { lastFocus = btn; var a = nav.querySelector('a'); if (a) a.focus({ preventScroll: true }); }
-        else if (lastFocus) { lastFocus.focus({ preventScroll: true }); lastFocus = null; }
-      }, 0);
-    });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
-
-    // Свайп вниз по открытому меню закрывает его (как «шторка» в нативных приложениях)
-    var y0 = null;
-    nav.addEventListener('touchstart', function (e) { y0 = nav.scrollTop <= 0 ? e.touches[0].clientY : null; }, { passive: true });
-    nav.addEventListener('touchend', function (e) {
-      if (y0 === null) return;
-      var dy = (e.changedTouches[0].clientY - y0);
-      y0 = null;
-      if (dy > 90) closeMenu();
-    }, { passive: true });
-    // При переходе на десктопную ширину меню закрываем, чтобы не залипал scroll-lock
-    window.addEventListener('resize', function () { if (window.innerWidth > 960) closeMenu(); });
   })();
 })();
