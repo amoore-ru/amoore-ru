@@ -933,8 +933,7 @@ body.menu-open .mobile-cta{ display: none !important; }
     max-width: 100%;
     width: 100%;
   }
-  .section-index { right: 16px; top: 40px; font-size: 56px; }
-}
+  }
 @media (max-width: 720px){
   .feat-grid,
 .cmd-grid { grid-template-columns: 1fr; }
@@ -1055,7 +1054,6 @@ body.menu-open .mobile-cta{ display: none !important; }
     max-width: 100%;
   }
   .section h2 { font-size: clamp(22px, 7vw, 28px); }
-  .section-index { opacity: 0.02; font-size: 40px; right: 12px; }
   .btn-lg { padding: 14px 20px; font-size: 15px; }
   .cmd-card { min-height: 68px; }
   footer {
@@ -1139,19 +1137,6 @@ body.menu-open .mobile-cta{ display: none !important; }
 /* ===== Section index watermark ===== */
 .section {
   position: relative;
-}
-.section-index{
-  position: absolute;
-  top: 48px;
-  right: 24px;
-  font-size: clamp(48px, 8vw, 80px);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: var(--ink);
-  opacity: 0.03;
-  pointer-events: none;
-  line-height: 1;
-  user-select: none;
 }
 /* ===== Focus rings ===== */
 :focus-visible{
@@ -1935,8 +1920,7 @@ body.has-mobile-cta { padding-bottom: 0 !important; }
   #chat, .section.reveal { margin-top: 0 !important; clear: both; }
   #chat { padding-top: 40px; }
   .live-chat { position: relative; z-index: 0; margin: 0 0 20px 0 !important; }
-  .section-index { z-index: 0; pointer-events: none; }
-}
+  }
 
 /* 4) Светлая тема: мягкая рамка и лёгкая тень вместо жёсткого контура (hero-card и cta-banner — тёмные, не трогаем) */
 :root[data-theme="light"] .glass-card, :root[data-theme="light"] .feat-card, :root[data-theme="light"] .cmd-card,
@@ -1989,3 +1973,16 @@ body.has-mobile-cta { padding-bottom: 0 !important; }
 .user-sites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
 .user-sites a { display: block; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, .25); color: inherit; text-decoration: none; overflow-wrap: anywhere; }
 .user-sites a:hover { border-color: rgba(212, 175, 55, .6); }
+
+
+/* v5.2: колокольчик и публичный профиль */
+.ux-bell{position:relative}.ux-bell-dot{position:absolute;top:6px;right:7px;width:9px;height:9px;border-radius:50%;background:#ff5d6c;box-shadow:0 0 0 2px var(--nx-bg,#0d1220)}
+.ux-tools{position:relative}
+.ux-bell-panel{position:absolute;right:0;top:calc(100% + 10px);width:min(320px,calc(100vw - 24px));max-height:70vh;overflow:auto;padding:12px;border-radius:18px;z-index:80;display:grid;gap:8px}
+.ux-bell-item{padding:10px 12px;border-radius:12px;border:1px solid rgba(212,175,55,.18);display:grid;gap:2px;cursor:pointer;font-size:14px}.ux-bell-item span{opacity:.75;font-size:13px}.ux-bell-item.unread{border-color:rgba(212,175,55,.6);background:rgba(212,175,55,.1)}
+.user-public{text-align:center;max-width:560px;margin-inline:auto;padding:36px 24px;background:radial-gradient(420px 220px at 50% 0,rgba(212,175,55,.16),transparent 70%),var(--nx-glass-bg,rgba(13,18,32,.58))}
+.user-public .user-av{width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid rgba(212,175,55,.55);box-shadow:0 10px 34px rgba(212,175,55,.25);margin:0 auto 14px;display:block}
+.user-av-ph{display:flex!important;align-items:center;justify-content:center;font:800 44px var(--nx-font-head,system-ui);color:#17151d}
+.user-handle{margin:2px 0 10px;opacity:.7}.user-badge{display:inline-block;padding:4px 14px;border-radius:999px;font-weight:700;font-size:13px;color:var(--nx-gold,#d4af37);background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.45);margin-bottom:12px}
+.user-public .user-bio{max-width:44ch;margin:0 auto 10px}.user-since{font-size:13px}
+.user-public .user-sites{list-style:none;padding:0;display:grid;gap:8px;margin:10px 0 0}.user-public .user-sites a{display:block;padding:11px 14px;border-radius:14px;border:1px solid rgba(212,175,55,.3);text-decoration:none;transition:background .2s}.user-public .user-sites a:hover{background:rgba(212,175,55,.12)}

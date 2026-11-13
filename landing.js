@@ -1,5 +1,5 @@
 /**
- * landing.js — v5.1.0 «MASTER» (лендинг amoore-ru)
+ * landing.js — v5.2.0 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.1.0';
+  var VERSION = window.AMOORE_VERSION || '5.2.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -78,7 +78,7 @@
     if (pm) history.replaceState(null, '', '/#u/' + pm[1].toLowerCase());
     show(parse(location.hash));
 
-    // ---- вкладка «Профиль»: профиль Amoore ID прямо на странице
+    // ---- вкладка «Профиль»: профиль amoore ID прямо на странице
     function waitID() {
       return new Promise(function (ok) { var n = 0; (function t() { if (window.amooreID && window.amooreID.sb) return ok(window.amooreID); if (++n > 40) return ok(null); setTimeout(t, 100); })(); });
     }
@@ -98,18 +98,26 @@
     function mk(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
     async function loadUser(name) {
       var host = $('user-host'); if (!host) return;
-      host.textContent = ''; host.appendChild(mk('p', 'muted', 'Загрузка…'));
+      host.textContent = ''; var sk = mk('div', 'skeleton-stack'); sk.appendChild(mk('i')); sk.appendChild(mk('i')); sk.appendChild(mk('i')); host.appendChild(sk);
       var id = await waitID(), data = null;
       if (id) { try { var r = await id.sb.rpc('public_profile', { p_username: name }); data = r.data || null; } catch (e) {} }
       host.textContent = '';
-      document.title = (data ? '@' + data.username + ' — amoore' : TITLES.user);
+      document.title = (data ? (data.display_name || '@' + data.username) + ' — amoore' : TITLES.user);
       if (!data) { host.appendChild(mk('h2', '', 'Профиль не найден')); host.appendChild(mk('p', 'muted', 'Такого пользователя нет или страница скрыта.')); return; }
+      var RU = { super_admin: 'Основатель', admin: 'Администратор', moderator: 'Модератор' };
+      var COL = /^#[0-9a-f]{6}$/i.test(data.avatar_color || '') ? data.avatar_color : '#d4af37';
+      var shown = data.display_name || data.username;
+      host.className = 'glass-card user-card user-public';
       if (/^https:\/\//.test(data.avatar_url || '')) { var img = mk('img', 'user-av'); img.alt = ''; img.src = data.avatar_url; host.appendChild(img); }
-      host.appendChild(mk('h2', '', '@' + data.username));
+      else { var ph = mk('div', 'user-av user-av-ph', String(shown).charAt(0).toUpperCase()); ph.style.background = COL; ph.setAttribute('aria-hidden', 'true'); host.appendChild(ph); }
+      host.appendChild(mk('h2', '', shown));
+      host.appendChild(mk('p', 'user-handle', '@' + data.username));
+      if (RU[data.role]) host.appendChild(mk('span', 'user-badge', RU[data.role]));
       if (data.bio) host.appendChild(mk('p', 'user-bio', data.bio));
+      if (data.created_at) host.appendChild(mk('p', 'muted user-since', 'С нами с ' + new Date(data.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })));
       var sites = (data.sites || []).filter(function (s) { return /^https:\/\//i.test(s.url || ''); });
+      host.appendChild(mk('h3', '', 'Сайты'));
       if (sites.length) {
-        host.appendChild(mk('h3', '', 'Сайты'));
         var ul = mk('ul', 'user-sites');
         sites.forEach(function (s) { var li = document.createElement('li'), a = mk('a', '', s.title || s.url); a.href = s.url; a.target = '_blank'; a.rel = 'noopener nofollow ugc'; li.appendChild(a); ul.appendChild(li); });
         host.appendChild(ul);
@@ -169,7 +177,7 @@
       if ($('lead-hp') && $('lead-hp').value) { say('Спасибо! Мы скоро напишем.', 'ok'); form.reset(); return; }
 
       if (name.length < 2) { say('Введите имя (минимум 2 символа).', 'err'); $('lead-name').focus(); return; }
-      if (!validContact(contact)) { say('Укажите Telegram (@ник), телефон или email.', 'err'); $('lead-contact').focus(); return; }
+      if (!validContact(contact)) { say('Укажите Телеграм (@ник), телефон или email.', 'err'); $('lead-contact').focus(); return; }
 
       try {
         var last = +localStorage.getItem(THROTTLE_KEY) || 0;
@@ -186,7 +194,7 @@
       if (res.ok) {
         try { localStorage.setItem(THROTTLE_KEY, String(Date.now())); } catch (x) {}
         btn.textContent = 'Отправлено ✓';
-        say('Спасибо! Заявка получена — мы скоро напишем в Telegram.', 'ok');
+        say('Спасибо! Заявка получена — мы скоро напишем в Телеграм.', 'ok');
         form.reset();
         setTimeout(function () { btn.textContent = label; }, 3500);
       } else {
@@ -196,7 +204,7 @@
         var hint = res.status === 401 || res.status === 403 ? 'Форма временно недоступна.'
           : res.status === 404 ? 'Форма ещё не подключена.'
           : 'Не удалось отправить.';
-        say(hint + ' Напишите нам в Telegram: @asoave_bot', 'err');
+        say(hint + ' Напишите нам в Телеграм: @asoave_bot', 'err');
       }
     });
   })();
@@ -284,4 +292,42 @@
     document.addEventListener('amoore:news', function () { apply(); });
     select('all', false);
   })();
+})();
+
+
+// ---------------------------------------------------------------------- v5.2: колокольчик уведомлений (блок 16)
+(function bell() {
+  var btn = document.querySelector('[data-ux-bell]'); if (!btn) return;
+  var dot = btn.querySelector('.ux-bell-dot'), panel = null, sb = null;
+  function mk(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  async function load() {
+    var id = window.amooreID; if (!id) return;
+    var u = null; try { u = await id.getProfile(); } catch (e) {} if (!u) { btn.hidden = true; return; }
+    sb = id.sb; btn.hidden = false;
+    var r = await sb.from('notifications').select('id,title,body,link,read_at,created_at').order('created_at', { ascending: false }).limit(10);
+    var rows = (r && r.data) || [], unread = rows.filter(function (x) { return !x.read_at; });
+    dot.hidden = !unread.length; btn.setAttribute('aria-label', unread.length ? 'Уведомления: ' + unread.length + ' новых' : 'Уведомления');
+    btn._rows = rows;
+  }
+  function close() { if (panel) { panel.remove(); panel = null; } }
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation(); if (panel) return close();
+    var rows = btn._rows || []; panel = mk('div', 'ux-bell-panel glass'); panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Уведомления');
+    if (!rows.length) panel.appendChild(mk('p', 'muted', 'Пока нет уведомлений'));
+    rows.forEach(function (x) {
+      var it = mk('div', 'ux-bell-item' + (x.read_at ? '' : ' unread')); it.appendChild(mk('strong', '', x.title)); if (x.body) it.appendChild(mk('span', '', x.body));
+      if (x.link && /^#[a-z0-9\/_-]*$/i.test(x.link)) it.addEventListener('click', function () { location.hash = x.link; close(); });
+      panel.appendChild(it);
+    });
+    if (rows.some(function (x) { return !x.read_at; })) {
+      var rd = mk('button', 'chip-tab', 'Отметить прочитанным'); rd.type = 'button';
+      rd.addEventListener('click', function () { sb.from('notifications').update({ read_at: new Date().toISOString() }).is('read_at', null).then(function () { dot.hidden = true; close(); load(); }); });
+      panel.appendChild(rd);
+    }
+    btn.parentNode.appendChild(panel);
+  });
+  document.addEventListener('click', function (e) { if (panel && !panel.contains(e.target)) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  document.addEventListener('amoore:id-ready', load); document.addEventListener('amoore:profile', function () { if (!btn._loaded) { btn._loaded = true; load(); } });
+  setTimeout(load, 1200);
 })();

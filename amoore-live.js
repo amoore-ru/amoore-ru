@@ -1,4 +1,4 @@
-/** amoore-live.js — v5.1.0 · heartbeat «кто сейчас на сайте» (каждые 30 с, только пока вкладка видима). Только лендинг. */
+/** amoore-live.js — v5.2.0 · heartbeat «кто сейчас на сайте» (каждые 30 с, только пока вкладка видима). Только лендинг. */
 (function () {
   'use strict';
   var SB = window.AMOORE_SUPABASE_URL || 'https://wogouiecoigzmxqccnsk.supabase.co', KEY = window.AMOORE_SUPABASE_ANON || 'sb_publishable_iGhPrxcxzUuop_bKdy-k7g_zWPzTT8Q';
