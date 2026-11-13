@@ -30,10 +30,15 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-  <script src="amoore-ux.js?v=4.3.0"></script>
+  <link rel="preconnect" href="https://wogouiecoigzmxqccnsk.supabase.co" crossorigin>
+  <link rel="prefetch" as="image" href="images/qr-code.webp">
+  <meta name="amoore-vapid-public-key" content="">
+  <noscript><style>.spa-view{display:block!important}.spa-tabbar{display:none!important}</style></noscript>
 
-  <link rel="stylesheet" href="style.css?v=4.3.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=4.3.0">
+  <script src="amoore-ux.js?v=5.1.0"></script>
+
+  <link rel="stylesheet" href="style.css?v=5.1.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=5.1.0">
 </head>
 
 <body>
@@ -49,18 +54,21 @@
           <span class="ux-mark">a.</span>
           <span class="ux-name"><strong>amoore</strong><small>AI companion</small></span>
         </a>
-        <button type="button" class="ux-chip nx-version-chip" id="nx-version-chip" data-ux-chip aria-haspopup="dialog" aria-label="История обновлений">v4.3</button>
+        <button type="button" class="ux-chip nx-version-chip" id="nx-version-chip" data-ux-chip aria-haspopup="dialog" aria-label="История обновлений">v5.1</button>
       </div>
       <div class="ux-panel" id="ux-panel">
         <nav class="ux-nav" id="ux-nav" aria-label="Навигация">
-          <a class="ux-tab" href="#chat">Диалог</a>
-          <a class="ux-tab" href="#ecosystem">Экосистема</a>
-          <a class="ux-tab" href="#features">Возможности</a>
-          <a class="ux-tab" href="#commands">Команды</a>
-          <a class="ux-tab" href="#news">Новости</a>
-          <a class="ux-tab" href="#faq">FAQ</a>
-          <a class="ux-tab" href="#start">Начать</a>
+          <a class="ux-tab" href="#home" data-spa-tab="home">Главная</a>
+          <a class="ux-tab" href="#news" data-spa-tab="news">Новости</a>
+          <a class="ux-tab" href="#chat" data-spa-tab="chat">Чат</a>
+          <a class="ux-tab" href="#ecosystem" data-spa-tab="ecosystem">Экосистема</a>
+          <a class="ux-tab" href="#profile" data-spa-tab="profile">Профиль</a>
         </nav>
+        <div class="ux-mobile-extra" id="ux-mobile-extra">
+          <a class="ux-extra-tg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Попробовать в Telegram</a>
+          <div class="ux-extra-qr"><img src="images/qr-code.webp" alt="QR-код бота amoore в Telegram" width="96" height="96" loading="lazy" decoding="async"><span>Отсканируй в Telegram</span></div>
+          <a class="ux-extra-dev" href="https://amoore-dev.pages.dev/" target="_blank" rel="noopener">Панель amoore Dev</a>
+        </div>
         <div class="ux-group">
           <a class="ux-icon-btn ux-settings-link" data-ux-settings href="https://amoore-dev.pages.dev/#settings" title="Настройки" aria-label="Настройки" target="_blank" rel="noopener" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></a>
           <div class="ux-user" data-ux-user hidden><span class="ux-avatar" data-ux-avatar aria-hidden="true"></span><span class="ux-user-name" data-ux-user-name></span></div>
@@ -74,7 +82,9 @@
     </div>
   </header>
 
-  <!-- Hero -->
+  <main id="spa" class="spa">
+  <div class="spa-view is-active" id="view-home" data-view="home" role="region" aria-label="Главная">
+<!-- Hero -->
   <section class="hero">
     <div class="hero-ornaments" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="hero-grid">
@@ -121,76 +131,7 @@
     </div>
   </section>
 
-  <!-- Interactive demo chat -->
-  <section class="section reveal" id="chat">
-    <div class="section-index" aria-hidden="true">01</div>
-    <div class="section-label">Диалог</div>
-    <h2>Попробуйте amoore здесь</h2>
-    <p class="section-lead">
-      Короткое демо на сайте. Полный бот с памятью и группами — в Telegram.
-    </p>
-
-    <div class="live-chat glass-card" id="live-chat">
-      <div class="live-chat-head">
-        <div class="live-chat-avatar">a.</div>
-        <div>
-          <strong>amoore</strong>
-          <span>демо · не полный бот</span>
-        </div>
-        <a class="live-chat-tg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">В Telegram</a>
-      </div>
-
-      <div class="live-chat-log" id="chat-log" role="log" aria-live="polite"></div>
-
-      <div class="live-chat-suggestions" id="chat-suggestions"></div>
-
-      <form class="live-chat-form" id="chat-form" autocomplete="off">
-        <input
-          type="text"
-          id="chat-input"
-          maxlength="200"
-          placeholder="Напишите что-нибудь…"
-          aria-label="Сообщение"
-        >
-        <button type="submit" class="btn btn-primary" id="chat-send">Отправить</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Ecosystem -->
-  <section class="section reveal" id="ecosystem">
-    <div class="section-index" aria-hidden="true">03</div>
-    <div class="section-label">Экосистема</div>
-    <h2>Знакомьтесь с amoore</h2>
-    <p class="section-lead">
-      Небольшая экосистема, которая развивается и скоро сможет работать в разных направлениях.
-    </p>
-
-    <div class="eco-grid">
-      <a class="eco-card glass-card reveal" href="https://amoore-ru.pages.dev/" target="_blank" rel="noopener">
-        <span class="eco-card-icon" aria-hidden="true">✦</span>
-        <span class="eco-card-body"><h3>amoore</h3><p>Главный сайт: новости, демо-чат и информация о боте.</p></span>
-        <span class="eco-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="eco-card glass-card reveal reveal-delay-1" href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">
-        <span class="eco-card-icon" aria-hidden="true">◇</span>
-        <span class="eco-card-body"><h3>amoore Studio</h3><p>Конструктор сайтов: создавай и публикуй проекты в один клик.</p></span>
-        <span class="eco-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="eco-card glass-card reveal reveal-delay-2" href="https://amoore-dev.pages.dev/" target="_blank" rel="noopener">
-        <span class="eco-card-icon" aria-hidden="true">◆</span>
-        <span class="eco-card-body"><h3>amoore Dev</h3><p>Панель управления (Mission Control) для владельца.</p></span>
-        <span class="eco-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="eco-card glass-card reveal reveal-delay-3" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
-        <span class="eco-card-icon" aria-hidden="true">✧</span>
-        <span class="eco-card-body"><h3>amoore AI (Бот)</h3><p>Умный и эмпатичный ИИ-собеседник в Telegram.</p></span>
-        <span class="eco-arrow" aria-hidden="true">→</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- Features -->
+<!-- Features -->
   <section class="section reveal" id="features">
     <div class="section-index" aria-hidden="true">04</div>
     <div class="section-label">Возможности</div>
@@ -231,7 +172,7 @@
     </div>
   </section>
 
-  <!-- Commands -->
+<!-- Commands -->
   <section class="section reveal" id="commands">
     <div class="section-index" aria-hidden="true">05</div>
     <div class="section-label">Команды</div>
@@ -258,28 +199,7 @@
     </div>
   </section>
 
-  <!-- News -->
-  <section class="section reveal" id="news">
-    <div class="section-index" aria-hidden="true">06</div>
-    <div class="section-label">Новости</div>
-    <h2>Что нового</h2>
-    <p class="section-lead">Обновления, патчи и планы.</p>
-
-    <div class="tabs news-tabs" id="news-tabs" role="tablist" aria-label="Фильтр новостей" hidden>
-      <button type="button" class="tab is-active" role="tab" data-filter="all" aria-selected="true" aria-pressed="true">Все <span class="news-count" aria-hidden="true"></span></button>
-      <button type="button" class="tab" role="tab" data-filter="digest" aria-selected="false" aria-pressed="false" tabindex="-1">Дайджесты <span class="news-count" aria-hidden="true"></span></button>
-      <button type="button" class="tab" role="tab" data-filter="news" aria-selected="false" aria-pressed="false" tabindex="-1">Обновления <span class="news-count" aria-hidden="true"></span></button>
-      <button type="button" class="tab" role="tab" data-filter="patch" aria-selected="false" aria-pressed="false" tabindex="-1">Патчи <span class="news-count" aria-hidden="true"></span></button>
-      <button type="button" class="tab" role="tab" data-filter="soon" aria-selected="false" aria-pressed="false" tabindex="-1">Планы <span class="news-count" aria-hidden="true"></span></button>
-    </div>
-
-    <div class="news-list" id="news-list" data-amoore-news>
-      <div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div><div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div>
-    </div>
-  </section>
-
-
-  <!-- FAQ -->
+<!-- FAQ -->
   <section class="section reveal" id="faq">
     <div class="section-index" aria-hidden="true">07</div>
     <div class="section-label">FAQ</div>
@@ -310,7 +230,7 @@
     </div>
   </section>
 
-  <!-- Start -->
+<!-- Start -->
   <section class="section reveal" id="start">
     <div class="section-index" aria-hidden="true">08</div>
     <div class="section-label">Старт</div>
@@ -355,7 +275,7 @@
     </div>
   </section>
 
-  <!-- CTA -->
+<!-- CTA -->
   <section class="cta reveal">
     <div class="cta-banner">
       <h2>Готовы познакомиться с amoore?</h2>
@@ -365,10 +285,127 @@
       </a>
     </div>
   </section>
-
-  <div class="mobile-cta" id="mobile-cta">
-    <a class="btn btn-primary" href="https://t.me/asoave_bot" target="_blank" rel="noopener">Открыть в Telegram</a>
   </div>
+  <div class="spa-view" id="view-news" data-view="news" role="region" aria-label="Новости">
+<!-- News -->
+  <section class="section reveal" id="news">
+    <div class="section-index" aria-hidden="true">06</div>
+    <div class="section-label">Новости</div>
+    <h2>Что нового</h2>
+    <p class="section-lead">Обновления, патчи и планы.</p>
+
+    <div class="tabs news-tabs" id="news-tabs" role="tablist" aria-label="Фильтр новостей" hidden>
+      <button type="button" class="tab is-active" role="tab" data-filter="all" aria-selected="true" aria-pressed="true">Все <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="digest" aria-selected="false" aria-pressed="false" tabindex="-1">Дайджесты <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="news" aria-selected="false" aria-pressed="false" tabindex="-1">Обновления <span class="news-count" aria-hidden="true"></span></button>
+      <button type="button" class="tab" role="tab" data-filter="soon" aria-selected="false" aria-pressed="false" tabindex="-1">Планы <span class="news-count" aria-hidden="true"></span></button>
+    </div>
+
+    <div class="news-list" id="news-list" data-amoore-news>
+      <div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div><div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div>
+    </div>
+  </section>
+  </div>
+  <div class="spa-view" id="view-chat" data-view="chat" role="region" aria-label="Чат">
+<!-- Interactive demo chat -->
+  <section class="section reveal" id="chat">
+    <div class="section-index" aria-hidden="true">01</div>
+    <div class="section-label">Диалог</div>
+    <h2>Попробуйте amoore здесь</h2>
+    <p class="section-lead">
+      Короткое демо на сайте. Полный бот с памятью и группами — в Telegram.
+    </p>
+
+    <div class="live-chat glass-card" id="live-chat">
+      <div class="live-chat-head">
+        <div class="live-chat-avatar">a.</div>
+        <div>
+          <strong>amoore</strong>
+          <span>демо · не полный бот</span>
+        </div>
+        <a class="live-chat-tg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">В Telegram</a>
+      </div>
+
+      <div class="live-chat-log" id="chat-log" role="log" aria-live="polite"></div>
+
+      <div class="live-chat-suggestions" id="chat-suggestions"></div>
+
+      <form class="live-chat-form" id="chat-form" autocomplete="off">
+        <input
+          type="text"
+          id="chat-input"
+          maxlength="200"
+          placeholder="Напишите что-нибудь…"
+          aria-label="Сообщение"
+        >
+        <button type="submit" class="btn btn-primary" id="chat-send">Отправить</button>
+      </form>
+    </div>
+  </section>
+  </div>
+  <div class="spa-view" id="view-ecosystem" data-view="ecosystem" role="region" aria-label="Экосистема">
+<!-- Ecosystem -->
+  <section class="section reveal" id="ecosystem">
+    <div class="section-index" aria-hidden="true">03</div>
+    <div class="section-label">Экосистема</div>
+    <h2>Знакомьтесь с amoore</h2>
+    <p class="section-lead">
+      Небольшая экосистема, которая развивается и скоро сможет работать в разных направлениях.
+    </p>
+
+    <div class="eco-grid">
+      <a class="eco-card glass-card reveal" href="https://amoore-ru.pages.dev/" target="_blank" rel="noopener">
+        <span class="eco-card-icon" aria-hidden="true">✦</span>
+        <span class="eco-card-body"><h3>amoore</h3><p>Главный сайт: новости, демо-чат и информация о боте.</p></span>
+        <span class="eco-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="eco-card glass-card reveal reveal-delay-1" href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">
+        <span class="eco-card-icon" aria-hidden="true">◇</span>
+        <span class="eco-card-body"><h3>amoore Studio</h3><p>Конструктор сайтов: создавай и публикуй проекты в один клик.</p></span>
+        <span class="eco-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="eco-card glass-card reveal reveal-delay-2" href="https://amoore-dev.pages.dev/" target="_blank" rel="noopener">
+        <span class="eco-card-icon" aria-hidden="true">◆</span>
+        <span class="eco-card-body"><h3>amoore Dev</h3><p>Панель управления (Mission Control) для владельца.</p></span>
+        <span class="eco-arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="eco-card glass-card reveal reveal-delay-3" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
+        <span class="eco-card-icon" aria-hidden="true">✧</span>
+        <span class="eco-card-body"><h3>amoore AI (Бот)</h3><p>Умный и эмпатичный ИИ-собеседник в Telegram.</p></span>
+        <span class="eco-arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+  </div>
+  <div class="spa-view" id="view-profile" data-view="profile" role="region" aria-label="Профиль">
+  <section class="section visible" id="profile">
+      <div class="section-label">Профиль</div>
+      <h2>Amoore ID</h2>
+      <p class="section-lead">Бизнес-ассистент, баллы Rewards, безопасность и уведомления — в одном месте.</p>
+      <div class="glass-card profile-panel">
+        <div id="profile-guest" class="profile-guest" hidden>
+          <p>Войдите, чтобы увидеть свой профиль, баллы и настройки.</p>
+          <button type="button" class="btn btn-primary" id="profile-login">Войти в Amoore ID</button>
+        </div>
+        <div id="profile-host" class="profile-host" hidden></div>
+      </div>
+  </section>
+  </div>
+  <div class="spa-view" id="view-user" data-view="user" role="region" aria-label="Публичный профиль">
+  <section class="section visible" id="user-page">
+      <div class="glass-card user-card" id="user-host" aria-live="polite"><p class="muted">Загрузка…</p></div>
+      <p><a href="#home" class="btn btn-ghost">← На главную</a></p>
+  </section>
+  </div>
+</main>
+
+  <nav class="spa-tabbar" id="spa-tabbar" aria-label="Разделы">
+    <a class="spa-tab" href="#home" data-spa-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Главная</span></a>
+    <a class="spa-tab" href="#news" data-spa-tab="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h13a2 2 0 0 1 2 2v12H6a2 2 0 0 1-2-2z"/><path d="M8 9h7M8 13h7"/></svg><span>Новости</span></a>
+    <a class="spa-tab" href="#chat" data-spa-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Чат</span></a>
+    <a class="spa-tab" href="#ecosystem" data-spa-tab="ecosystem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="20" r="2"/><path d="M7 7l3 3M17 7l-3 3M12 15v3"/></svg><span>Экосистема</span></a>
+    <a class="spa-tab" href="#profile" data-spa-tab="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg><span>Профиль</span></a>
+  </nav>
 
   <footer>
     <p>amoore — ИИ-подруга в Telegram</p>
@@ -378,7 +415,7 @@
       <a href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener">Studio</a>
     </p>
     <p class="footer-version">
-      <button type="button" class="version-btn" id="version-btn" aria-haspopup="dialog">Версия <span data-amoore-version>4.3.0</span> · история обновлений</button>
+      <button type="button" class="version-btn" id="version-btn" aria-haspopup="dialog">Версия <span data-amoore-version>5.1.0</span> · история обновлений</button>
     </p>
   </footer>
 
@@ -386,12 +423,6 @@
 
   <script>
     (function () {
-      var mobileCta = document.getElementById("mobile-cta");
-      var uxBar = document.getElementById("ux-topbar");
-      if (uxBar && mobileCta && "MutationObserver" in window) {
-        new MutationObserver(function () { mobileCta.style.display = uxBar.classList.contains("open") ? "none" : ""; })
-          .observe(uxBar, { attributes: true, attributeFilter: ["class"] });
-      }
 
       var reveals = document.querySelectorAll(".reveal");
       if ("IntersectionObserver" in window) {
@@ -409,7 +440,7 @@
       }
 
       var topbar = document.querySelector(".ux-topbar");
-      var navLinks = document.querySelectorAll(".ux-nav a[href^='#']");
+      var navLinks = [];   // v5.1: активную вкладку ведёт SPA-роутер (landing.js)
       var sections = [];
       navLinks.forEach(function (a) {
         var id = a.getAttribute("href");
@@ -996,30 +1027,7 @@
           });
         });
       })();
-
-
-
-      // Mobile sticky CTA (rAF, как progress и topbar)
-      (function () {
-        var bar = document.getElementById("mobile-cta");
-        if (!bar) return;
-        var ctaRaf = 0;
-        function check() {
-          var show = window.innerWidth <= 960 && window.scrollY > 280;
-          bar.classList.toggle("show", show);
-          document.body.classList.toggle("has-mobile-cta", show);
-        }
-        function checkRaf() {
-          if (ctaRaf) return;
-          ctaRaf = requestAnimationFrame(function () {
-            ctaRaf = 0;
-            check();
-          });
-        }
-        window.addEventListener("scroll", checkRaf, { passive: true });
-        window.addEventListener("resize", checkRaf, { passive: true });
-        check();
-      })();
+      // v4.4: плавающая кнопка «Открыть в Telegram» удалена (дублировала кнопки и перекрывала текст)
 
       // Toast
       var toastEl = document.getElementById("toast");
@@ -1050,9 +1058,15 @@
 
     })();
   </script>
+<script>(function(){var m=location.hash.replace(/^#\/?/,'').split('/')[0],a=/^u$/.test(m)?'user':document.getElementById('view-'+m)?m:null;if(!a&&m&&!/[=&]/.test(m)){var e=document.getElementById(m);a=e&&e.closest&&e.closest('.spa-view')?e.closest('.spa-view').dataset.view:null}if(a&&a!=='home'){var c=document.querySelector('.spa-view.is-active');if(c)c.classList.remove('is-active');document.getElementById('view-'+a).classList.add('is-active')}})();</script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=4.3.0"></script>
-<script src="landing.js?v=4.3.0" defer></script>
+<script src="amoore-core.js?v=5.1.0"></script>
+<script src="amoore-id.js?v=5.1.0"></script>
+<script src="amoore-pwa.js?v=5.1.0" defer></script>
+<script src="amoore-cmdk.js?v=5.1.0" defer></script>
+<script src="amoore-live.js?v=5.1.0" defer></script>
+<script>window.addEventListener("DOMContentLoaded",function(){if(!window.amooreID)return;var p=amooreID.boot({site:"landing"}),f=function(){document.dispatchEvent(new Event("amoore:id-ready"));};p&&p.then?p.then(f,f):f();});</script>
+<script src="landing.js?v=5.1.0" defer></script>
 </body>
 </html>

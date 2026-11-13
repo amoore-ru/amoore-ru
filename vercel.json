@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/u/:name",
+      "destination": "/#u/:name",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)\\.(png|webp|woff2|ico)",

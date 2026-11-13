@@ -934,10 +934,6 @@ body.menu-open .mobile-cta{ display: none !important; }
     width: 100%;
   }
   .section-index { right: 16px; top: 40px; font-size: 56px; }
-  .mobile-cta { display: block; }
-  body.has-mobile-cta {
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-  }
 }
 @media (max-width: 720px){
   .feat-grid,
@@ -1903,3 +1899,93 @@ img, video, canvas, svg, iframe { max-width: 100%; }
 .eco-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 @media (max-width: 720px) { .eco-grid { grid-template-columns: 1fr; } .eco-card { padding: 18px 18px; } }
 @media (prefers-reduced-motion: reduce) { .eco-card, .eco-arrow { transition: none; } .eco-card:hover { transform: none; } }
+
+/* =====================================================================
+   v4.4 BUGFIX (iPhone Safari / Telegram WebView)
+   ===================================================================== */
+/* 1) Плавающая кнопка «Открыть в Telegram» удалена из разметки; на случай кэша/старых вставок — жёстко скрыта */
+.mobile-cta, #mobile-cta { display: none !important; }
+body.has-mobile-cta { padding-bottom: 0 !important; }
+
+/* 2) Телефоны и тач-экраны: никаких 3D-трансформаций, перспективы, слоёв GPU и SVG-фильтра «liquid glass» —
+      именно они давали «дрожание» и наезжание карточек в WebKit */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+  .hero-card, .glass-card, .feat-card, .cmd-card, .eco-card, .news-item, .cta-banner, .live-chat {
+    transform: none !important; -webkit-transform: none !important;
+    perspective: none !important; transform-style: flat !important;
+    will-change: auto !important; backface-visibility: visible !important; -webkit-backface-visibility: visible !important;
+    filter: none !important;
+  }
+  .hero-card { --tx: 0px; --ty: 0px; --rx: 0deg; --ry: 0deg; animation: none !important; }
+  .hero-card.liquid-active, .cta-banner.liquid-active { filter: none !important; }
+  .hero-card:hover, .glass-card:hover, .glass-card:active { transform: none !important; }
+}
+
+/* 3) Отступы и слои: карточки идут друг за другом в потоке, без отрицательных margin и наложения */
+@media (max-width: 768px) {
+  .hero, .hero-grid, .section { position: relative; }
+  .hero-grid { gap: 20px !important; }
+  .hero-card {
+    position: relative; z-index: 0; width: 100%; max-width: 100%; box-sizing: border-box;
+    margin: 0 0 20px 0 !important; min-height: 0 !important;
+  }
+  .hero-card > div:first-child { min-width: 0; }
+  .hero-card h2, .hero-card p { overflow-wrap: anywhere; }
+  .hero-card-footer { margin-top: 24px; }
+  #chat, .section.reveal { margin-top: 0 !important; clear: both; }
+  #chat { padding-top: 40px; }
+  .live-chat { position: relative; z-index: 0; margin: 0 0 20px 0 !important; }
+  .section-index { z-index: 0; pointer-events: none; }
+}
+
+/* 4) Светлая тема: мягкая рамка и лёгкая тень вместо жёсткого контура (hero-card и cta-banner — тёмные, не трогаем) */
+:root[data-theme="light"] .glass-card, :root[data-theme="light"] .feat-card, :root[data-theme="light"] .cmd-card,
+:root[data-theme="light"] .eco-card, :root[data-theme="light"] .news-item, :root[data-theme="light"] .live-chat,
+:root[data-theme="light"] .glass, :root[data-theme="light"] .site-card, :root[data-theme="light"] .admin-card {
+  border: 1px solid rgba(0, 0, 0, 0.05) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important; filter: none;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .glass-card, :root:not([data-theme="dark"]) .feat-card, :root:not([data-theme="dark"]) .cmd-card,
+  :root:not([data-theme="dark"]) .eco-card, :root:not([data-theme="dark"]) .news-item, :root:not([data-theme="dark"]) .live-chat,
+  :root:not([data-theme="dark"]) .glass, :root:not([data-theme="dark"]) .site-card, :root:not([data-theme="dark"]) .admin-card {
+    border: 1px solid rgba(0, 0, 0, 0.05) !important; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  }
+}
+
+/* ===== v5.1 · Лендинг как Web App (SPA): вкладки без перезагрузки ===== */
+.spa-view { display: none; }
+.spa-view.is-active { display: block; animation: spa-in .28s ease both; }
+@keyframes spa-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .spa-view.is-active { animation: none; } }
+.spa-tabbar { display: none; }
+@media (max-width: 1119px) {
+  .spa-tabbar {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 9980;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+    background: var(--nx-modal-bg, rgba(13, 18, 32, .95));
+    border-top: var(--nx-glass-border, 1px solid rgba(212, 175, 55, .2));
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  }
+  .spa-tab {
+    flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 6px 2px; border-radius: 12px; text-decoration: none; color: var(--nx-muted, #8b90a5);
+    font: 600 11px var(--nx-font-body, system-ui); min-height: 44px; justify-content: center;
+  }
+  .spa-tab svg { width: 22px; height: 22px; }
+  .spa-tab span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .spa-tab.active, .spa-tab[aria-current="page"] { color: var(--nx-gold, #d4af37); background: rgba(var(--nx-gold-rgb, 212, 175, 55), .12); }
+  body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+  #aid-chip { bottom: calc(80px + env(safe-area-inset-bottom)) !important; }
+  .toast { bottom: calc(84px + env(safe-area-inset-bottom)); }
+}
+.profile-panel { padding: 20px; }
+.profile-guest { text-align: center; padding: 12px 0; }
+.profile-guest p { margin: 0 0 14px; }
+.profile-host .aid-card { max-width: 100%; max-height: none; box-shadow: none; border: 0; background: transparent; padding: 0; }
+.user-card { padding: 24px; text-align: center; max-width: 560px; margin: 0 auto 16px; }
+.user-card img.user-av { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(212, 175, 55, .45); display: block; margin: 0 auto 12px; }
+.user-card h2 { margin: 0 0 6px; }
+.user-card .user-bio { margin: 0 0 16px; overflow-wrap: anywhere; }
+.user-sites { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.user-sites a { display: block; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(212, 175, 55, .25); color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+.user-sites a:hover { border-color: rgba(212, 175, 55, .6); }

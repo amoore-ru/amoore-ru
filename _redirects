@@ -1,0 +1,2 @@
+# Cloudflare Pages / Netlify: публичные профили amoore.ru/u/username → SPA (#u/username)
+/u/*  /#u/:splat  302

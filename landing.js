@@ -1,9 +1,10 @@
 /**
- * landing.js — v4.3.0 «POLISH» (лендинг amoore-ru)
+ * landing.js — v5.1.0 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
  *   3. Вкладки-фильтры новостей (Все / Обновления / Патчи / Планы)
+ *   0. SPA-роутер (v5.1): вкладки Главная | Новости | Чат | Экосистема | Профиль без перезагрузки, хэш-навигация, #u/username
  *   4. Меню-бургер «как в нативном приложении»: Esc, свайп вниз, возврат фокуса
  * Скрипт не зависит от Supabase напрямую: всё идёт через window.amooreCore (amoore-core.js).
  */
@@ -11,12 +12,125 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '4.3.0';
+  var VERSION = window.AMOORE_VERSION || '5.1.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
     n.textContent = VERSION;
   });
+
+
+  // ------------------------------------------------------------------ 0. SPA-роутер (v5.1)
+  // Вкладки переключаются классом is-active (display: none/block) — страница не перезагружается.
+  // Хэш-навигация: #home #news #chat #ecosystem #profile[/business|rewards|security|notify] #u/username, а также якоря #features, #faq …
+  var spa = (function () {
+    var VIEWS = ['home', 'news', 'chat', 'ecosystem', 'profile'];
+    var TITLES = { home: 'amoore | AI companion', news: 'Новости — amoore', chat: 'Диалог — amoore', ecosystem: 'Экосистема — amoore', profile: 'Профиль — amoore', user: 'Профиль — amoore' };
+    var current = null;
+
+    function viewEl(n) { return document.getElementById('view-' + n); }
+    function parse(hash) {
+      var h = String(hash || '').replace(/^#\/?/, '');
+      if (!h || /[=&]/.test(h)) return { view: 'home' };           // #access_token=…, #sso=… — не маршруты
+      var m = /^u\/([A-Za-z0-9_]{3,24})\/?$/.exec(h);
+      if (m) return { view: 'user', arg: m[1].toLowerCase() };
+      var parts = h.split('/');
+      if (VIEWS.indexOf(parts[0]) >= 0) return { view: parts[0], sub: parts[1] || '' };
+      var el = document.getElementById(h), v = el && el.closest && el.closest('.spa-view');
+      if (v) return { view: v.getAttribute('data-view'), anchor: h };
+      return { view: 'home' };
+    }
+    function paintTabs(name) {
+      Array.prototype.forEach.call(document.querySelectorAll('[data-spa-tab]'), function (a) {
+        var on = a.getAttribute('data-spa-tab') === name;
+        a.classList.toggle('active', on);
+        if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      });
+    }
+    function show(route, opts) {
+      opts = opts || {};
+      var name = route.view, el = viewEl(name); if (!el) { name = 'home'; el = viewEl('home'); route = { view: 'home' }; }
+      if (current !== name) {
+        Array.prototype.forEach.call(document.querySelectorAll('.spa-view'), function (v) { v.classList.toggle('is-active', v === el); });
+        current = name; paintTabs(name === 'user' ? '' : name);
+        document.title = TITLES[name] || TITLES.home;
+        if (!route.anchor) window.scrollTo(0, 0);
+        document.dispatchEvent(new CustomEvent('amoore:view', { detail: { view: name } }));
+      }
+      if (route.anchor) { var t = document.getElementById(route.anchor); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      if (name === 'profile') paintProfile(route.sub);
+      if (name === 'user') loadUser(route.arg);
+    }
+    function go(hash) { if (location.hash !== hash) history.pushState(null, '', hash); show(parse(hash)); }
+
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.hasAttribute('data-no-spa') || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      var href = a.getAttribute('href'); if (href.length < 2) return;
+      var r = parse(href); if (r.view === 'home' && href !== '#home' && !r.anchor) return;   // неизвестный хэш — не трогаем
+      e.preventDefault(); go(href);
+    });
+    window.addEventListener('hashchange', function () { show(parse(location.hash)); });
+    window.addEventListener('popstate', function () { show(parse(location.hash)); });
+
+    // /u/username (если хостинг отдал index.html по этому пути) → #u/username
+    var pm = /^\/u\/([A-Za-z0-9_]{3,24})\/?$/.exec(location.pathname);
+    if (pm) history.replaceState(null, '', '/#u/' + pm[1].toLowerCase());
+    show(parse(location.hash));
+
+    // ---- вкладка «Профиль»: профиль Amoore ID прямо на странице
+    function waitID() {
+      return new Promise(function (ok) { var n = 0; (function t() { if (window.amooreID && window.amooreID.sb) return ok(window.amooreID); if (++n > 40) return ok(null); setTimeout(t, 100); })(); });
+    }
+    var profileTabs = { business: 'business', rewards: 'rewards', security: 'security', notify: 'notify' };
+    async function paintProfile(sub) {
+      var host = $('profile-host'), guest = $('profile-guest'); if (!host || !guest) return;
+      var id = await waitID(), session = null;
+      if (id) { try { session = (await id.sb.auth.getSession()).data.session; } catch (e) {} }
+      if (!session) { host.hidden = true; guest.hidden = false; return; }
+      guest.hidden = true; host.hidden = false;
+      try { await id.renderProfile(host, profileTabs[sub] || 'profile'); } catch (e) { host.textContent = 'Не удалось загрузить профиль. Попробуйте позже.'; }
+    }
+    if ($('profile-login')) $('profile-login').addEventListener('click', function () { waitID().then(function (id) { if (id) id.openLogin(); }); });
+    document.addEventListener('amoore:id-ready', function () { if (current === 'profile') paintProfile(parse(location.hash).sub); });
+
+    // ---- публичный профиль: #u/username (только аватарка, био и публичные сайты — всё через textContent)
+    function mk(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+    async function loadUser(name) {
+      var host = $('user-host'); if (!host) return;
+      host.textContent = ''; host.appendChild(mk('p', 'muted', 'Загрузка…'));
+      var id = await waitID(), data = null;
+      if (id) { try { var r = await id.sb.rpc('public_profile', { p_username: name }); data = r.data || null; } catch (e) {} }
+      host.textContent = '';
+      document.title = (data ? '@' + data.username + ' — amoore' : TITLES.user);
+      if (!data) { host.appendChild(mk('h2', '', 'Профиль не найден')); host.appendChild(mk('p', 'muted', 'Такого пользователя нет или страница скрыта.')); return; }
+      if (/^https:\/\//.test(data.avatar_url || '')) { var img = mk('img', 'user-av'); img.alt = ''; img.src = data.avatar_url; host.appendChild(img); }
+      host.appendChild(mk('h2', '', '@' + data.username));
+      if (data.bio) host.appendChild(mk('p', 'user-bio', data.bio));
+      var sites = (data.sites || []).filter(function (s) { return /^https:\/\//i.test(s.url || ''); });
+      if (sites.length) {
+        host.appendChild(mk('h3', '', 'Сайты'));
+        var ul = mk('ul', 'user-sites');
+        sites.forEach(function (s) { var li = document.createElement('li'), a = mk('a', '', s.title || s.url); a.href = s.url; a.target = '_blank'; a.rel = 'noopener nofollow ugc'; li.appendChild(a); ul.appendChild(li); });
+        host.appendChild(ul);
+      } else host.appendChild(mk('p', 'muted', 'Публичных сайтов пока нет.'));
+    }
+    return { go: go, show: show, parse: parse, current: function () { return current; } };
+  })();
+  window.amooreSPA = spa;
+
+  // ------------------------------------------------------------------ 0.1 Prefetch (v5.1): шрифты и картинки других вкладок прогреваются в простое
+  (function prefetch() {
+    var c = navigator.connection; if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+    function run() {
+      ['images/qr-code.webp'].forEach(function (u) {
+        if (document.querySelector('link[rel="prefetch"][href="' + u + '"]')) return;
+        var l = document.createElement('link'); l.rel = 'prefetch'; l.as = 'image'; l.href = u; document.head.appendChild(l);
+      });
+      if (document.fonts && document.fonts.load) ['500 16px "DM Sans"', '600 16px "DM Sans"', '700 20px "Manrope"', '800 28px "Manrope"', '400 16px "Inter"'].forEach(function (f) { document.fonts.load(f).catch(function () {}); });
+    }
+    if (window.requestIdleCallback) requestIdleCallback(run, { timeout: 4000 }); else setTimeout(run, 2500);
+  })();
 
   // ------------------------------------------------------------------ 1. форма заявки
   (function leadForm() {
@@ -99,7 +213,7 @@
   })();
 
   // ------------------------------------------------------------------ 3. вкладки-фильтры новостей
-  // Все · Дайджесты (type=digest) · Обновления (type=news) · Патчи (type=patch) · Планы (type=soon). Список перестраивается без перезагрузки:
+  // Все · Дайджесты (type=digest) · Обновления (type=news + type=patch) · Планы (type=soon). Вкладки «Патчи» больше нет (v4.4). Список перестраивается без перезагрузки:
   // лишние карточки плавно гаснут, нужные — появляются каскадом. Порядок «самое свежее сверху» задаёт amoore-core.js.
   (function newsTabs() {
     var tabsBox = $('news-tabs'), list = $('news-list');
@@ -112,12 +226,14 @@
     // ЖЁСТКИЙ фильтр: «Все» — всё, КРОМЕ дайджестов; остальные вкладки — строго свой type
     function matches(el) {
       var t = el.getAttribute('data-type');
-      return current === 'all' ? t !== 'digest' : t === current;
+      if (current === 'all') return t !== 'digest';
+      if (current === 'news') return t === 'news' || t === 'patch';   // «Обновления» = новости + патчи
+      return t === current;
     }
 
     function counts() {
-      var c = { all: 0, digest: 0, news: 0, patch: 0, soon: 0 }, total = 0;
-      cards().forEach(function (el) { total++; var t = el.getAttribute('data-type'); if (c[t] !== undefined) c[t]++; if (t !== 'digest') c.all++; });
+      var c = { all: 0, digest: 0, news: 0, soon: 0 }, total = 0;
+      cards().forEach(function (el) { total++; var t = el.getAttribute('data-type'); if (t === 'patch') t = 'news'; if (c[t] !== undefined) c[t]++; if (el.getAttribute('data-type') !== 'digest') c.all++; });
       tabs.forEach(function (b) { var n = b.querySelector('.news-count'); if (n) n.textContent = c[b.getAttribute('data-filter')]; });
       tabsBox.hidden = total === 0;       // пока нет реальных новостей (скелетон/заглушка) — вкладки скрыты
       c.total = total;
