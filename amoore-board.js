@@ -1,4 +1,4 @@
-/** amoore-board.js — v5.7.0 · лидерборд «Топ-10 по баллам» (RPC leaderboard_top10, только открытые профили). Всё выводится через textContent. */
+/** amoore-board.js — v5.7.1 · лидерборд «Топ-10 по баллам» (RPC leaderboard_top10, только открытые профили). Всё выводится через textContent. */
 (function () {
   'use strict';
   var list = document.getElementById('board-list'); if (!list) return;

@@ -1,5 +1,5 @@
 /**
- * landing.js — v5.7.0 «MASTER» (лендинг amoore-ru)
+ * landing.js — v5.7.1 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.7.0';
+  var VERSION = window.AMOORE_VERSION || '5.7.1';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -78,7 +78,7 @@
     if (pm) history.replaceState(null, '', '/#u/' + pm[1].toLowerCase());
     show(parse(location.hash));
 
-    // ---- вкладка «Профиль»: профиль amoore ID прямо на странице
+    // ---- вкладка «Профиль»: профиль amoore id прямо на странице
     function waitID() {
       return new Promise(function (ok) { var n = 0; (function t() { if (window.amooreID && window.amooreID.sb) return ok(window.amooreID); if (++n > 40) return ok(null); setTimeout(t, 100); })(); });
     }
@@ -116,13 +116,14 @@
       host.className = 'glass-card user-card user-public';
       if (/^https:\/\//.test(data.banner_url || '')) { var bn = mk('div', 'user-banner'); bn.style.backgroundImage = 'url("' + data.banner_url.replace(/"/g, '%22') + '")'; host.appendChild(bn); }
       else host.appendChild(mk('div', 'user-banner user-banner-def'));
-      if (/^https:\/\//.test(data.avatar_url || '')) { var img = mk('img', 'user-av'); img.alt = ''; img.src = data.avatar_url; host.appendChild(img); }
-      else { var ph = mk('div', 'user-av user-av-ph', String(shown).charAt(0).toUpperCase()); ph.style.background = COL; ph.setAttribute('aria-hidden', 'true'); host.appendChild(ph); }
-      host.appendChild(mk('h2', '', shown));
-      host.appendChild(mk('p', 'user-handle', '@' + data.username));
-      if (RU[data.role]) host.appendChild(mk('span', 'user-badge', RU[data.role]));
-      if (data.bio) host.appendChild(mk('p', 'user-bio', data.bio));
-      var stats = mk('p', 'user-stats', 'Подписчиков: ' + (data.followers || 0) + (data.points != null ? ' · Баллов: ' + data.points : '')); host.appendChild(stats);
+      var head = mk('div', 'user-head'), info = mk('div', 'user-head-info');
+      if (/^https:\/\//.test(data.avatar_url || '')) { var img = mk('img', 'user-av'); img.alt = ''; img.src = data.avatar_url; head.appendChild(img); }
+      else { var ph = mk('div', 'user-av user-av-ph', String(shown).charAt(0).toUpperCase()); ph.style.background = COL; ph.setAttribute('aria-hidden', 'true'); head.appendChild(ph); }
+      info.appendChild(mk('h2', '', shown));
+      info.appendChild(mk('p', 'user-handle', '@' + data.username));
+      var badge = data.rank_label || RU[data.role];                       // v5.7.1: текстовый бейдж ранга (права от него не зависят)
+      var badgeEl = badge ? mk('span', 'user-badge', badge) : null; if (badgeEl) info.appendChild(badgeEl);
+      var stats = mk('p', 'user-stats', 'Подписчиков: ' + (data.followers || 0) + (data.points != null ? ' · Баллов: ' + data.points : ''));
       var acts = mk('div', 'user-actions');
       if (!data.is_me && id) {
         var fb = mk('button', 'btn btn-primary user-follow', data.is_following ? 'Вы подписаны' : 'Подписаться'); fb.type = 'button';
@@ -136,16 +137,24 @@
         });
         acts.appendChild(fb);
       }
-      if (data.telegram_id) { var tg = mk('a', 'btn btn-ghost user-tg', 'Написать в Telegram'); tg.href = 'tg://user?id=' + encodeURIComponent(data.telegram_id); acts.appendChild(tg); }
-      if (acts.childNodes.length) host.appendChild(acts);
-      if (data.created_at) host.appendChild(mk('p', 'muted user-since', 'С нами с ' + new Date(data.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })));
+      // v5.7.1: обычная ссылка https://t.me/<username> — открывается и с ПК (tg:// на десктопе не работал)
+      if (/^[A-Za-z0-9_]{4,32}$/.test(data.telegram_username || '')) { var tg = mk('a', 'btn btn-ghost user-tg', 'Написать в Telegram'); tg.href = 'https://t.me/' + data.telegram_username; tg.target = '_blank'; tg.rel = 'noopener'; acts.appendChild(tg); }
+      info.appendChild(stats);
+      if (acts.childNodes.length) info.appendChild(acts);
+      head.appendChild(info); host.appendChild(head);
+      var body = mk('div', 'user-body'); host.appendChild(body);
+      if (data.bio) body.appendChild(mk('p', 'user-bio', data.bio));
+      if (data.created_at) body.appendChild(mk('p', 'muted user-since', 'С нами с ' + new Date(data.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })));
       var sites = (data.sites || []).filter(function (s) { return /^https:\/\//i.test(s.url || ''); });
-      host.appendChild(mk('h3', '', 'Сайты'));
+      body.appendChild(mk('h3', '', 'Сайты'));
       if (sites.length) {
         var ul = mk('ul', 'user-sites');
         sites.forEach(function (s) { var li = document.createElement('li'), a = mk('a', '', s.title || s.url); a.href = s.url; a.target = '_blank'; a.rel = 'noopener nofollow ugc'; li.appendChild(a); ul.appendChild(li); });
-        host.appendChild(ul);
-      } else host.appendChild(mk('p', 'muted', 'Публичных сайтов пока нет.'));
+        body.appendChild(ul);
+      } else body.appendChild(mk('p', 'muted', 'Публичных сайтов пока нет.'));
+          if (id && id.godPanel && (window.amooreProfileCache || {}).role === 'super_admin') host.appendChild(id.godPanel(data.username, function (patch) {
+        if (patch.rank_label !== undefined && badgeEl) badgeEl.textContent = patch.rank_label || RU[data.role] || '';
+      }));
     }
     return { go: go, show: show, parse: parse, current: function () { return current; } };
   })();
