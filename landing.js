@@ -1,5 +1,5 @@
 /**
- * landing.js — v5.2.0 «MASTER» (лендинг amoore-ru)
+ * landing.js — v5.3.0 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.2.0';
+  var VERSION = window.AMOORE_VERSION || '5.3.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
