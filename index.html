@@ -35,10 +35,10 @@
   <meta name="amoore-vapid-public-key" content="">
   <noscript><style>.spa-view{display:block!important}.spa-tabbar{display:none!important}</style></noscript>
 
-  <script src="amoore-ux.js?v=5.3.0"></script>
+  <script src="amoore-ux.js?v=5.4.0"></script>
 
-  <link rel="stylesheet" href="style.css?v=5.3.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=5.3.0">
+  <link rel="stylesheet" href="style.css?v=5.4.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=5.4.0">
 </head>
 
 <body>
@@ -368,6 +368,10 @@
         <span class="eco-card-body"><h3>amoore AI (Бот)</h3><p>Умный и эмпатичный ИИ-собеседник в Телеграм.</p></span>
         <span class="eco-arrow" aria-hidden="true">→</span>
       </a>
+    </div>
+    <div class="board" id="board" aria-labelledby="board-h">
+      <h3 id="board-h">🏆 Топ-10 по баллам</h3>
+      <ol class="board-list" id="board-list"><li class="board-empty">Загрузка…</li></ol>
     </div>
   </section>
   </div>
@@ -1055,12 +1059,13 @@
 <script>(function(){var m=location.hash.replace(/^#\/?/,'').split('/')[0],a=/^u$/.test(m)?'user':document.getElementById('view-'+m)?m:null;if(!a&&m&&!/[=&]/.test(m)){var e=document.getElementById(m);a=e&&e.closest&&e.closest('.spa-view')?e.closest('.spa-view').dataset.view:null}if(a&&a!=='home'){var c=document.querySelector('.spa-view.is-active');if(c)c.classList.remove('is-active');document.getElementById('view-'+a).classList.add('is-active')}})();</script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=5.3.0"></script>
-<script src="amoore-id.js?v=5.3.0"></script>
-<script src="amoore-pwa.js?v=5.3.0" defer></script>
-<script src="amoore-cmdk.js?v=5.3.0" defer></script>
-<script src="amoore-live.js?v=5.3.0" defer></script>
+<script src="amoore-core.js?v=5.4.0"></script>
+<script src="amoore-id.js?v=5.4.0"></script>
+<script src="amoore-pwa.js?v=5.4.0" defer></script>
+<script src="amoore-cmdk.js?v=5.4.0" defer></script>
+<script src="amoore-live.js?v=5.4.0" defer></script>
 <script>window.addEventListener("DOMContentLoaded",function(){if(!window.amooreID)return;var p=amooreID.boot({site:"landing"}),f=function(){document.dispatchEvent(new Event("amoore:id-ready"));};p&&p.then?p.then(f,f):f();});</script>
-<script src="landing.js?v=5.3.0" defer></script>
+<script src="amoore-board.js?v=5.4.0" defer></script>
+<script src="landing.js?v=5.4.0" defer></script>
 </body>
 </html>
