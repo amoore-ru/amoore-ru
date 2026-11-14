@@ -1,5 +1,5 @@
 /**
- * landing.js — v5.5.0 «MASTER» (лендинг amoore-ru)
+ * landing.js — v5.7.0 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.5.0';
+  var VERSION = window.AMOORE_VERSION || '5.7.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -96,8 +96,14 @@
 
     // ---- публичный профиль: #u/username (только аватарка, био и публичные сайты — всё через textContent)
     function mk(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+    var userSearchMounted = false;
+    async function mountUserSearch() {
+      if (userSearchMounted) return; var host = $('user-host'), id = await waitID(); if (!host || !id || !id.peopleSearch) return;
+      userSearchMounted = true; host.parentNode.insertBefore(id.peopleSearch(), host);
+    }
     async function loadUser(name) {
       var host = $('user-host'); if (!host) return;
+      mountUserSearch();
       host.textContent = ''; var sk = mk('div', 'skeleton-stack'); sk.appendChild(mk('i')); sk.appendChild(mk('i')); sk.appendChild(mk('i')); host.appendChild(sk);
       var id = await waitID(), data = null;
       if (id) { try { var r = await id.sb.rpc('public_profile', { p_username: name }); data = r.data || null; } catch (e) {} }
@@ -108,12 +114,30 @@
       var COL = /^#[0-9a-f]{6}$/i.test(data.avatar_color || '') ? data.avatar_color : '#d4af37';
       var shown = data.display_name || data.username;
       host.className = 'glass-card user-card user-public';
+      if (/^https:\/\//.test(data.banner_url || '')) { var bn = mk('div', 'user-banner'); bn.style.backgroundImage = 'url("' + data.banner_url.replace(/"/g, '%22') + '")'; host.appendChild(bn); }
+      else host.appendChild(mk('div', 'user-banner user-banner-def'));
       if (/^https:\/\//.test(data.avatar_url || '')) { var img = mk('img', 'user-av'); img.alt = ''; img.src = data.avatar_url; host.appendChild(img); }
       else { var ph = mk('div', 'user-av user-av-ph', String(shown).charAt(0).toUpperCase()); ph.style.background = COL; ph.setAttribute('aria-hidden', 'true'); host.appendChild(ph); }
       host.appendChild(mk('h2', '', shown));
       host.appendChild(mk('p', 'user-handle', '@' + data.username));
       if (RU[data.role]) host.appendChild(mk('span', 'user-badge', RU[data.role]));
       if (data.bio) host.appendChild(mk('p', 'user-bio', data.bio));
+      var stats = mk('p', 'user-stats', 'Подписчиков: ' + (data.followers || 0) + (data.points != null ? ' · Баллов: ' + data.points : '')); host.appendChild(stats);
+      var acts = mk('div', 'user-actions');
+      if (!data.is_me && id) {
+        var fb = mk('button', 'btn btn-primary user-follow', data.is_following ? 'Вы подписаны' : 'Подписаться'); fb.type = 'button';
+        fb.addEventListener('click', async function () {
+          fb.disabled = true;
+          var want = !data.is_following, rr = await id.sb.rpc('follow_user', { p_username: data.username, p_follow: want });
+          fb.disabled = false;
+          if (rr.error) { if (/войдите/i.test(rr.error.message || '')) { id.openLogin('Войдите, чтобы подписаться'); } return; }
+          data.is_following = want; data.followers = (data.followers || 0) + (want ? 1 : -1);
+          fb.textContent = want ? 'Вы подписаны' : 'Подписаться'; stats.textContent = 'Подписчиков: ' + data.followers + (data.points != null ? ' · Баллов: ' + data.points : '');
+        });
+        acts.appendChild(fb);
+      }
+      if (data.telegram_id) { var tg = mk('a', 'btn btn-ghost user-tg', 'Написать в Telegram'); tg.href = 'tg://user?id=' + encodeURIComponent(data.telegram_id); acts.appendChild(tg); }
+      if (acts.childNodes.length) host.appendChild(acts);
       if (data.created_at) host.appendChild(mk('p', 'muted user-since', 'С нами с ' + new Date(data.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })));
       var sites = (data.sites || []).filter(function (s) { return /^https:\/\//i.test(s.url || ''); });
       host.appendChild(mk('h3', '', 'Сайты'));

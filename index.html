@@ -35,10 +35,10 @@
   <meta name="amoore-vapid-public-key" content="">
   <noscript><style>.spa-view{display:block!important}.spa-tabbar{display:none!important}</style></noscript>
 
-  <script src="amoore-ux.js?v=5.5.0"></script>
+  <script src="amoore-ux.js?v=5.7.0"></script>
 
-  <link rel="stylesheet" href="style.css?v=5.5.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=5.5.0">
+  <link rel="stylesheet" href="style.css?v=5.7.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=5.7.0">
 </head>
 
 <body>
@@ -86,49 +86,29 @@
   <main id="spa" class="spa">
   <div class="spa-view is-active" id="view-home" data-view="home" role="region" aria-label="Главная">
 <!-- Hero -->
-  <section class="hero">
+  <section class="hero hero-eco">
     <div class="hero-ornaments" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="hero-grid">
-      <div>
-        <div class="hero-badge">ИИ-подруга в Телеграм</div>
-        <h1>Тёплая <em>amoore</em>,<br>которая всегда рядом</h1>
-        <p class="hero-lead">
-          Поболтает, поможет и присмотрит за вашим чатом.
-          Живое общение, игры, модерация и полезные мелочи — в одном боте.
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary btn-lg" href="https://t.me/asoave_bot" target="_blank" rel="noopener">
-            Открыть в Телеграм
-          </a>
-          <a class="btn btn-ghost btn-lg" href="#features">Что умеет</a>
-        </div>
-        <div class="hero-meta">
-          <div class="hero-meta-item">
-            <strong>24/7</strong>
-            <span>на связи</span>
-          </div>
-          <div class="hero-meta-item">
-            <strong>Игры</strong>
-            <span>и РП-команды</span>
-          </div>
-          <div class="hero-meta-item">
-            <strong>Модерация</strong>
-            <span>чатов</span>
-          </div>
-        </div>
-      </div>
+    <div class="hero-eco-head">
+      <div class="hero-badge">Единая цифровая экосистема</div>
+      <h1>Одна <em>amoore</em> — весь ваш цифровой мир</h1>
+      <p class="hero-lead">Искусственный интеллект, студия сайтов, мощный лендинг и единый аккаунт Amoore ID — всё работает вместе и открывается одним входом.</p>
+    </div>
+    <div class="bento" role="list">
+      <a class="bento-tile bento-ai glass-card" role="listitem" href="#ecosystem"><span class="bento-ico" aria-hidden="true">✧</span><h3>Искусственный интеллект</h3><p>Амора — эмпатичный ИИ-собеседник и помощник.</p></a>
+      <a class="bento-tile glass-card" role="listitem" href="https://amoore-studio.pages.dev/" target="_blank" rel="noopener"><span class="bento-ico" aria-hidden="true">◇</span><h3>Студия</h3><p>Конструктор сайтов с публикацией в один клик.</p></a>
+      <a class="bento-tile glass-card" role="listitem" href="#ecosystem"><span class="bento-ico" aria-hidden="true">◆</span><h3>Landing Pro</h3><p>Лендинг с заявками, новостями и аналитикой.</p></a>
+      <a class="bento-tile bento-id glass-card" role="listitem" href="#profile"><span class="bento-ico" aria-hidden="true">☺</span><h3>Amoore ID</h3><p>Единый профиль, баллы и публичная страница.</p></a>
+    </div>
+  </section>
 
-      <aside class="hero-card" aria-hidden="true">
-        <div>
-          <div class="hero-card-label">amoore AI</div>
-          <h2>Всё начинается<br>с разговора.</h2>
-          <p>Единое пространство для общения, помощи и порядка в ваших чатах.</p>
-        </div>
-        <div class="hero-card-footer">
-          <span class="hero-card-handle">@asoave_bot</span>
-          <div class="hero-card-mark">a.</div>
-        </div>
-      </aside>
+  <section class="section reveal" id="meet">
+    <div class="section-label">Масштаб</div>
+    <h2>Знакомьтесь с Аморой</h2>
+    <p class="section-lead">Амора — ИИ в Telegram, который общается, помогает и следит за порядком в чатах. Вокруг неё выросла целая экосистема.</p>
+    <div class="eco-grid">
+      <div class="eco-card glass-card"><span class="eco-card-icon" aria-hidden="true">◇</span><span class="eco-card-body"><h3>Студия</h3><p>Создавайте сайты из шаблонов, правьте визуально, генерируйте тексты с ИИ и публикуйте на GitHub Pages.</p></span></div>
+      <div class="eco-card glass-card"><span class="eco-card-icon" aria-hidden="true">◆</span><span class="eco-card-body"><h3>Dev-панель</h3><p>Mission Control для команды: заявки, аналитика, новости, роли, промокоды и логи в одном месте.</p></span></div>
+      <div class="eco-card glass-card"><span class="eco-card-icon" aria-hidden="true">☺</span><span class="eco-card-body"><h3>Amoore ID</h3><p>Один аккаунт для всех сервисов: вход по коду, привязка Telegram, баллы и публичный профиль.</p></span></div>
     </div>
   </section>
 
@@ -300,6 +280,10 @@
     <div class="news-list" id="news-list" data-amoore-news>
       <div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div><div class="news-skeleton" aria-hidden="true"><i></i><b></b><span></span></div>
     </div>
+    <div class="board" id="board" aria-labelledby="board-h">
+      <h3 id="board-h">🏆 Топ-10 по баллам</h3>
+      <ol class="board-list" id="board-list"><li class="board-empty">Загрузка…</li></ol>
+    </div>
   </section>
   </div>
   <div class="spa-view" id="view-chat" data-view="chat" role="region" aria-label="Чат">
@@ -368,10 +352,6 @@
         <span class="eco-card-body"><h3>amoore AI (Бот)</h3><p>Умный и эмпатичный ИИ-собеседник в Телеграм.</p></span>
         <span class="eco-arrow" aria-hidden="true">→</span>
       </a>
-    </div>
-    <div class="board" id="board" aria-labelledby="board-h">
-      <h3 id="board-h">🏆 Топ-10 по баллам</h3>
-      <ol class="board-list" id="board-list"><li class="board-empty">Загрузка…</li></ol>
     </div>
   </section>
   </div>
@@ -1059,13 +1039,13 @@
 <script>(function(){var m=location.hash.replace(/^#\/?/,'').split('/')[0],a=/^u$/.test(m)?'user':document.getElementById('view-'+m)?m:null;if(!a&&m&&!/[=&]/.test(m)){var e=document.getElementById(m);a=e&&e.closest&&e.closest('.spa-view')?e.closest('.spa-view').dataset.view:null}if(a&&a!=='home'){var c=document.querySelector('.spa-view.is-active');if(c)c.classList.remove('is-active');document.getElementById('view-'+a).classList.add('is-active')}})();</script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=5.5.0"></script>
-<script src="amoore-id.js?v=5.5.0"></script>
-<script src="amoore-pwa.js?v=5.5.0" defer></script>
-<script src="amoore-cmdk.js?v=5.5.0" defer></script>
-<script src="amoore-live.js?v=5.5.0" defer></script>
+<script src="amoore-core.js?v=5.7.0"></script>
+<script src="amoore-id.js?v=5.7.0"></script>
+<script src="amoore-pwa.js?v=5.7.0" defer></script>
+<script src="amoore-cmdk.js?v=5.7.0" defer></script>
+<script src="amoore-live.js?v=5.7.0" defer></script>
 <script>window.addEventListener("DOMContentLoaded",function(){if(!window.amooreID)return;var p=amooreID.boot({site:"landing"}),f=function(){document.dispatchEvent(new Event("amoore:id-ready"));};p&&p.then?p.then(f,f):f();});</script>
-<script src="amoore-board.js?v=5.5.0" defer></script>
-<script src="landing.js?v=5.5.0" defer></script>
+<script src="amoore-board.js?v=5.7.0" defer></script>
+<script src="landing.js?v=5.7.0" defer></script>
 </body>
 </html>
