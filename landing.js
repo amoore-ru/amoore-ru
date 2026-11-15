@@ -144,14 +144,21 @@
       head.appendChild(info); host.appendChild(head);
       var body = mk('div', 'user-body'); host.appendChild(body);
       if (data.bio) body.appendChild(mk('p', 'user-bio', data.bio));
-      if (data.created_at) body.appendChild(mk('p', 'muted user-since', 'С нами с ' + new Date(data.created_at).toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' })));
+      if (data.created_at) {
+        var d = new Date(data.created_at);
+        var dd = String(d.getDate()).padStart(2, '0');
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var yyyy = d.getFullYear();
+        body.appendChild(mk('p', 'muted user-since', 'На проекте с ' + dd + '.' + mm + '.' + yyyy));
+      }
       var sites = (data.sites || []).filter(function (s) { return /^https:\/\//i.test(s.url || ''); });
-      body.appendChild(mk('h3', '', 'Сайты'));
       if (sites.length) {
+        body.appendChild(mk('h3', '', 'Сайты'));
         var ul = mk('ul', 'user-sites');
         sites.forEach(function (s) { var li = document.createElement('li'), a = mk('a', '', s.title || s.url); a.href = s.url; a.target = '_blank'; a.rel = 'noopener nofollow ugc'; li.appendChild(a); ul.appendChild(li); });
         body.appendChild(ul);
-      } else body.appendChild(mk('p', 'muted', 'Публичных сайтов пока нет.'));
+      }
+      /* пустой блок «Сайты» полностью скрыт — без заглушки */
           if (id && id.godPanel && (window.amooreProfileCache || {}).role === 'super_admin') host.appendChild(id.godPanel(data.username, function (patch) {
         if (patch.rank_label !== undefined && badgeEl) badgeEl.textContent = patch.rank_label || RU[data.role] || '';
       }));
