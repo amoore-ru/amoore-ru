@@ -1,5 +1,5 @@
 /**
- * landing.js — v5.9.0 «MASTER» (лендинг amoore-ru)
+ * landing.js — v5.8.0 «MASTER» (лендинг amoore-ru)
  * Что здесь:
  *   1. Форма «Оставить заявку» (блок #start) → таблица leads через amooreCore.submitLead
  *   2. История обновлений: кнопка в подвале → модалка ядра (данные из БД)
@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.9.0';
+  var VERSION = window.AMOORE_VERSION || '5.8.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -121,7 +121,7 @@
       else { var ph = mk('div', 'user-av user-av-ph', String(shown).charAt(0).toUpperCase()); ph.style.background = COL; ph.setAttribute('aria-hidden', 'true'); head.appendChild(ph); }
       info.appendChild(mk('h2', '', shown));
       info.appendChild(mk('p', 'user-handle', '@' + data.username));
-      var badge = data.rank_label || RU[data.role];                       // v5.9.0: текстовый бейдж ранга (права от него не зависят)
+      var badge = data.rank_label || RU[data.role];                       // v5.8.0: текстовый бейдж ранга (права от него не зависят)
       var badgeEl = badge ? mk('span', 'user-badge', badge) : null; if (badgeEl) info.appendChild(badgeEl);
       var stats = mk('p', 'user-stats', 'Подписчиков: ' + (data.followers || 0) + (data.points != null ? ' · Баллов: ' + data.points : ''));
       var acts = mk('div', 'user-actions');
@@ -137,7 +137,7 @@
         });
         acts.appendChild(fb);
       }
-      // v5.9.0: обычная ссылка https://t.me/<username> — открывается и с ПК (tg:// на десктопе не работал)
+      // v5.8.0: обычная ссылка https://t.me/<username> — открывается и с ПК (tg:// на десктопе не работал)
       if (/^[A-Za-z0-9_]{4,32}$/.test(data.telegram_username || '')) { var tg = mk('a', 'btn btn-ghost user-tg', 'Написать в Telegram'); tg.href = 'https://t.me/' + data.telegram_username; tg.target = '_blank'; tg.rel = 'noopener'; acts.appendChild(tg); }
       info.appendChild(stats);
       if (acts.childNodes.length) info.appendChild(acts);
