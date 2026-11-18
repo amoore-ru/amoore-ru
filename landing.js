@@ -12,11 +12,11 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '5.8.0';
+  var VERSION = window.AMOORE_VERSION || '6.0.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
-    n.textContent = VERSION;
+    n.textContent = 'v' + String(VERSION).split('.')[0];   // v6.0: на главном экране — только мажор
   });
 
 
@@ -370,4 +370,12 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   document.addEventListener('amoore:id-ready', load); document.addEventListener('amoore:profile', function () { if (!btn._loaded) { btn._loaded = true; load(); } });
   setTimeout(load, 1200);
+})();
+
+// v6.0.1: круглая кнопка поиска в пилюльной оболочке открывает командную палитру (та же, что и по Ctrl/⌘ + K)
+(function () {
+  var b = document.getElementById('pill-search'); if (!b) return;
+  b.addEventListener('click', function () {
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }));
+  });
 })();
