@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Минимальные права: страница amoore.cc.cd не получает доступа к нативным командам",
+  "windows": ["main"],
+  "permissions": []
+}

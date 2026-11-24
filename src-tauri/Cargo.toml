@@ -1,0 +1,21 @@
+[package]
+name = "amoore-app"
+version = "6.1.0"
+description = "amoore — оболочка для https://amoore.cc.cd"
+edition = "2021"
+
+[lib]
+name = "amoore_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = true

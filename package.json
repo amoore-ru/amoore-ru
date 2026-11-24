@@ -1,0 +1,13 @@
+{
+  "name": "amoore-app",
+  "version": "6.1.0",
+  "private": true,
+  "description": "amoore — оболочка Tauri v2 (Android), открывает https://amoore.cc.cd",
+  "scripts": {
+    "tauri": "tauri",
+    "android:init": "tauri android init && node ../scripts/patch-android.mjs",
+    "android:build": "tauri android build --apk",
+    "android:dev": "tauri android dev"
+  },
+  "devDependencies": { "@tauri-apps/cli": "^2.0.0" }
+}
