@@ -3,27 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+  <!-- pwa:begin (генерируется scripts/gen-pwa.py — руками не править) -->
+  <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F6F5F8" media="(prefers-color-scheme: light)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="amoore">
+  <meta name="application-name" content="amoore">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.b39ca743.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.dbae89c3.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.6e64985a.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-180.1b6411c3.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-startup-image" href="icons/splash-1320x2868.d7ed1934.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1206x2622.a4579b1e.png" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1290x2796.0a83f48b.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1179x2556.5f303e6a.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1284x2778.68d39213.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1170x2532.df27103a.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1125x2436.2be9b54e.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1242x2688.658c82a2.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-828x1792.e13ad90a.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-750x1334.76bde570.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1242x2208.5d22cc83.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-2064x2752.29150903.png" media="(device-width: 1032px) and (device-height: 1376px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-2048x2732.421d8e39.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1668x2388.7bfa78ef.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1668x2224.d4f42512.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1640x2360.e6a70666.png" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1620x2160.2bac9252.png" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1536x2048.b481fefc.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <link rel="apple-touch-startup-image" href="icons/splash-1488x2266.86d0cf32.png" media="(device-width: 744px) and (device-height: 1133px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+  <!-- pwa:end -->
 
   <title>amoore | AI companion</title>
 
   <meta name="description" content="amoore — тёплый ИИ-бот в Телеграм: общение, игры, помощь и управление группами.">
-  <meta name="theme-color" content="#070b16" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f3f1f8" media="(prefers-color-scheme: light)">
 
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="format-detection" content="telephone=no">
 
   <meta property="og:title" content="amoore — Официальный сайт">
   <meta property="og:description" content="amoore — ИИ-бот в Телеграм: общение, игры и модерация чатов.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://amoore-ru.github.io/">
+  <meta property="og:url" content="https://amoore.cc.cd/">
 
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,10 +59,10 @@
   <meta name="amoore-vapid-public-key" content="">
   <noscript><style>.spa-view{display:block!important}.spa-tabbar{display:none!important}</style></noscript>
 
-  <script src="amoore-ux.js?v=6.0.0"></script>
+  <script src="amoore-ux.js?v=6.1.0"></script>
 
-  <link rel="stylesheet" href="style.css?v=6.0.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=6.0.0">
+  <link rel="stylesheet" href="style.css?v=6.1.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=6.1.0">
 </head>
 
 <body class="pill-shell">
@@ -1047,13 +1071,13 @@
 <script>(function(){var m=location.hash.replace(/^#\/?/,'').split('/')[0],a=/^u$/.test(m)?'user':document.getElementById('view-'+m)?m:null;if(!a&&m&&!/[=&]/.test(m)){var e=document.getElementById(m);a=e&&e.closest&&e.closest('.spa-view')?e.closest('.spa-view').dataset.view:null}if(a&&a!=='home'){var c=document.querySelector('.spa-view.is-active');if(c)c.classList.remove('is-active');document.getElementById('view-'+a).classList.add('is-active')}})();</script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=6.0.0"></script>
-<script src="amoore-id.js?v=6.0.0"></script>
-<script src="amoore-pwa.js?v=6.0.0" defer></script>
-<script src="amoore-cmdk.js?v=6.0.0" defer></script>
-<script src="amoore-live.js?v=6.0.0" defer></script>
+<script src="amoore-core.js?v=6.1.0"></script>
+<script src="amoore-id.js?v=6.1.0"></script>
+<script src="amoore-pwa.js?v=6.1.0" defer></script>
+<script src="amoore-cmdk.js?v=6.1.0" defer></script>
+<script src="amoore-live.js?v=6.1.0" defer></script>
 <script>window.addEventListener("DOMContentLoaded",function(){if(!window.amooreID)return;var p=amooreID.boot({site:"landing"}),f=function(){document.dispatchEvent(new Event("amoore:id-ready"));};p&&p.then?p.then(f,f):f();});</script>
-<script src="amoore-board.js?v=6.0.0" defer></script>
-<script src="landing.js?v=6.0.0" defer></script>
+<script src="amoore-board.js?v=6.1.0" defer></script>
+<script src="landing.js?v=6.1.0" defer></script>
 </body>
 </html>

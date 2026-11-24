@@ -6,25 +6,41 @@
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "background_color": "#070b16",
-  "theme_color": "#070b16",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
   "lang": "ru",
+  "dir": "ltr",
+  "categories": [
+    "social",
+    "lifestyle"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "android-chrome-192x192.png",
+      "src": "icons/icon-192.6e64985a.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "android-chrome-512x512.png",
+      "src": "icons/icon-512.60d51745.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "android-chrome-512x512.png",
+      "src": "icons/maskable-192.a105df44.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-512.c51efd41.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
