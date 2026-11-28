@@ -12,7 +12,7 @@
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var VERSION = window.AMOORE_VERSION || '6.1.0';
+  var VERSION = window.AMOORE_VERSION || '6.2.0';
 
   // ------------------------------------------------------------------ версия в подвале и модалке
   Array.prototype.forEach.call(document.querySelectorAll('[data-amoore-version]'), function (n) {
@@ -372,10 +372,11 @@
   setTimeout(load, 1200);
 })();
 
-// v6.0.1: круглая кнопка поиска в пилюльной оболочке открывает командную палитру (та же, что и по Ctrl/⌘ + K)
+// v6.2: круглая Лупа слева внизу открывает модалку поиска людей (amoore ID). Командная палитра остаётся на Ctrl/⌘ + K.
 (function () {
   var b = document.getElementById('pill-search'); if (!b) return;
   b.addEventListener('click', function () {
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }));
+    if (window.amooreID && typeof window.amooreID.openPeopleSearch === 'function') window.amooreID.openPeopleSearch();
+    else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }));
   });
 })();

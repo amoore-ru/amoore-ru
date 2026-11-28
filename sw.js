@@ -1,6 +1,6 @@
-/* sw.js — v6.1.0 (PWA). Стратегия: HTML — сеть с запасом из кэша, затем offline.html; статика — stale-while-revalidate.
+/* sw.js — v6.2.0 (PWA). Стратегия: HTML — сеть с запасом из кэша, затем offline.html; статика — stale-while-revalidate.
    Запросы к Supabase / Edge Functions / чужим доменам НЕ кэшируются (авторизация и данные всегда живые). */
-const VER = 'amoore-v6.1.0';
+const VER = 'amoore-v6.2.0';
 const SHELL = ['./', 'offline.html'];                                   // без них оболочка не ставится
 const EXTRA = ['manifest.json', 'icons/notify-192.png', 'icons/notify-badge.png'];   // желательны, но не критичны
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(VER).then((c) => c.addAll(SHELL).then(() => Promise.all(EXTRA.map((u) => c.add(u).catch(() => {}))))).then(() => self.skipWaiting())); });

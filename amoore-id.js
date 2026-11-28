@@ -651,18 +651,56 @@
         return;
       }
       tm = setTimeout(async function() {
-        var r = await S.sb.rpc("search_profiles", { p_q: q });
         res.textContent = "";
-        if (r.error || !r.data || !r.data.length) {
-          res.appendChild(el("p", { class: "aid-hint", text: "Никого не найдено" }));
+        if (!S.sb) {
+          res.appendChild(el("p", { class: "aid-hint", text: "Поиск пока недоступен: нет соединения с аккаунтами" }));
           return;
         }
-        r.data.forEach(function(x) {
-          res.appendChild(personRow(x));
-        });
+        try {
+          var r = await S.sb.rpc("search_profiles", { p_q: q });
+          if (r.error || !r.data || !r.data.length) {
+            res.appendChild(el("p", { class: "aid-hint", text: "Никого не найдено" }));
+            return;
+          }
+          r.data.forEach(function(x) {
+            res.appendChild(personRow(x));
+          });
+        } catch (e) {
+          res.appendChild(el("p", { class: "aid-hint", text: "Не удалось выполнить поиск. Попробуйте ещё раз" }));
+        }
       }, 250);
     });
     return el("div", { class: "aid-people" }, [inp, res]);
+  }
+  function openPeopleSearch() {
+    var old = document.getElementById("aid-people-modal");
+    if (old) {
+      var oi = old.querySelector("input");
+      if (oi) oi.focus();
+      return;
+    }
+    var box = peopleSearch(), inp = box.querySelector("input"), ov;
+    function onKey(e) {
+      if (e.key === "Escape") shut();
+    }
+    function shut() {
+      document.removeEventListener("keydown", onKey);
+      if (ov) ov.remove();
+    }
+    ov = overlay(el("div", { class: "aid-card" }, [
+      el("h2", { text: "Поиск людей" }),
+      el("p", { class: "aid-hint", text: "Введите имя или username — от 2 символов" }),
+      box,
+      el("button", { class: "aid-btn aid-ghost", type: "button", text: "Закрыть", onclick: shut })
+    ]));
+    ov.id = "aid-people-modal";
+    ov.addEventListener("click", function(e) {
+      if (e.target === ov || e.target.closest && e.target.closest(".aid-person")) shut();
+    });
+    document.addEventListener("keydown", onKey);
+    setTimeout(function() {
+      if (inp) inp.focus();
+    }, 30);
   }
   var people = {
     list: async function() {
@@ -1476,6 +1514,7 @@
     openLogin,
     openSupport,
     peopleSearch,
+    openPeopleSearch,
     renderProfile,
     pendingRef,
     claimRef,

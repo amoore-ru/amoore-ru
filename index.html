@@ -59,10 +59,10 @@
   <meta name="amoore-vapid-public-key" content="">
   <noscript><style>.spa-view{display:block!important}.spa-tabbar{display:none!important}</style></noscript>
 
-  <script src="amoore-ux.js?v=6.1.0"></script>
+  <script src="amoore-ux.js?v=6.2.0"></script>
 
-  <link rel="stylesheet" href="style.css?v=6.1.0">
-  <link rel="stylesheet" href="amoore-theme.css?v=6.1.0">
+  <link rel="stylesheet" href="style.css?v=6.2.0">
+  <link rel="stylesheet" href="amoore-theme.css?v=6.2.0">
 </head>
 
 <body class="pill-shell">
@@ -104,7 +104,7 @@
       </div>
     </div>
   </header>
-  <button type="button" class="pill-search" id="pill-search" aria-label="Поиск" title="Поиск (Ctrl/⌘ + K)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+  <button type="button" class="pill-search" id="pill-search" aria-label="Поиск людей" title="Поиск людей"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
 
   <main id="spa" class="spa">
   <div class="spa-view is-active" id="view-home" data-view="home" role="region" aria-label="Главная">
@@ -1071,13 +1071,13 @@
 <script>(function(){var m=location.hash.replace(/^#\/?/,'').split('/')[0],a=/^u$/.test(m)?'user':document.getElementById('view-'+m)?m:null;if(!a&&m&&!/[=&]/.test(m)){var e=document.getElementById(m);a=e&&e.closest&&e.closest('.spa-view')?e.closest('.spa-view').dataset.view:null}if(a&&a!=='home'){var c=document.querySelector('.spa-view.is-active');if(c)c.classList.remove('is-active');document.getElementById('view-'+a).classList.add('is-active')}})();</script>
 <script>window.AMOORE_SITE_ID = 'landing';</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="amoore-core.js?v=6.1.0"></script>
-<script src="amoore-id.js?v=6.1.0"></script>
-<script src="amoore-pwa.js?v=6.1.0" defer></script>
-<script src="amoore-cmdk.js?v=6.1.0" defer></script>
-<script src="amoore-live.js?v=6.1.0" defer></script>
+<script src="amoore-core.js?v=6.2.0"></script>
+<script src="amoore-id.js?v=6.2.0"></script>
+<script src="amoore-pwa.js?v=6.2.0" defer></script>
+<script src="amoore-cmdk.js?v=6.2.0" defer></script>
+<script src="amoore-live.js?v=6.2.0" defer></script>
 <script>window.addEventListener("DOMContentLoaded",function(){if(!window.amooreID)return;var p=amooreID.boot({site:"landing"}),f=function(){document.dispatchEvent(new Event("amoore:id-ready"));};p&&p.then?p.then(f,f):f();});</script>
-<script src="amoore-board.js?v=6.1.0" defer></script>
-<script src="landing.js?v=6.1.0" defer></script>
+<script src="amoore-board.js?v=6.2.0" defer></script>
+<script src="landing.js?v=6.2.0" defer></script>
 </body>
 </html>

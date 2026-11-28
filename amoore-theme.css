@@ -1384,14 +1384,20 @@ html body.pill-shell .pill-search svg, html body.pill-nav #search-toggle svg { w
 /* ---------- ДЕСКТОП / ПЛАНШЕТ / АЛЬБОМ: ≥ 900px или ландшафт ≥ 640px ----------
    Лево: вертикальная пилюля шириной = Лупа (общая ось) сверху + Лупа внизу. Право: вертикальная пилюля навигации по центру. */
 @media (min-width: 900px), (min-width: 640px) and (orientation: landscape) {
-  /* v6.1: верхняя пилюля — ДЛИННАЯ ГОРИЗОНТАЛЬНАЯ строка от левого до правого поля (высота = модуль); справа под ней — вертикальная пилюля навигации */
+  /* v6.2: левая панель — ВЕРТИКАЛЬНАЯ пилюля в левом верхнем углу: Лого → чип версии → Тема → Уведомления.
+     Ширина = модуль (как у Лупы внизу слева) — обе круглые/овальные формы стоят на одной оси. */
   html body.pill-shell .ux-bar {
-    position: fixed; top: var(--pl-y-t); left: var(--pl-x-l); right: var(--pl-x-r); width: auto; height: var(--pl-u); max-height: none;
-    flex-direction: row; align-items: center; gap: 16px; padding: 0 16px; border-radius: 999px;
+    position: fixed; top: var(--pl-y-t); left: var(--pl-x-l); right: auto; bottom: auto; width: var(--pl-u); height: auto;
+    max-height: calc(100dvh - 2 * (var(--pl-y-b) + var(--pl-u) + var(--pl-m)));
+    flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; padding: 12px 0; border-radius: calc(var(--pl-u) / 2);
   }
-  html body.pill-shell .ux-left { flex-direction: row; align-items: center; gap: var(--pl-gap); width: auto; flex: 1 1 auto; min-width: 0; }
-  html body.pill-shell .ux-name small { display: none; }
-  html body.pill-shell .ux-tools { flex-direction: row; align-items: center; gap: var(--pl-gap); margin: 0 0 0 auto; }
+  html body.pill-shell .ux-left { flex-direction: column; align-items: center; gap: 8px; width: auto; flex: 0 0 auto; min-width: 0; }
+  html body.pill-shell .ux-logo { flex-direction: column; gap: 0; }
+  html body.pill-shell .ux-name { display: none; }
+  html body.pill-shell .ux-left .ux-chip { min-width: 40px; min-height: 28px; padding: 0 8px; }
+  html body.pill-shell .ux-tools { flex-direction: column; align-items: center; gap: var(--pl-gap); margin: 0; }
+  html body.pill-shell .ux-tools [data-ux-theme] { order: 1; }
+  html body.pill-shell .ux-tools :is([data-ux-bell], .bell-wrap) { order: 2; }
   html body.pill-shell .ux-nav {
     right: var(--pl-x-r); top: 50%; transform: translateY(-50%); flex-direction: column; align-items: center;
     width: var(--pl-nav-w); padding: 16px 0; border-radius: calc(var(--pl-u) / 2);
@@ -1425,10 +1431,9 @@ html body.pill-shell .pill-search svg, html body.pill-nav #search-toggle svg { w
   html body.pill-shell .ux-nav { max-height: calc(100dvh - 2 * (var(--pl-y-b) + var(--pl-u) + var(--pl-m))); }
   html body.pill-shell .spa-tabbar { display: none !important; }          /* на широких экранах навигация — правая пилюля; старый нижний док не нужен */
   html body.pill-shell .spa { max-width: none; }          /* контент растянут: поля под пилюли задаёт padding, а не max-width */
-  /* верх — под длинную пилюлю, низ — под Лупу/аккаунт */
-  html body.pill-shell { padding-top: calc(var(--pl-y-t) + var(--pl-u) + var(--pl-m)); padding-bottom: calc(var(--pl-y-b) + var(--pl-u) + var(--pl-m)); }
-  /* контент растянут между левым краем и правой пилюлей: слева — поле, справа — поле + пилюля навигации + поле (было 160px с обеих сторон) */
-  html body.pill-shell .spa, html body.pill-shell footer { padding-left: var(--pl-x-l); padding-right: calc(var(--pl-x-r) + var(--pl-nav-w) + var(--pl-m)); box-sizing: border-box; }
+  /* v6.2: сверху и снизу контент идёт от поля; слева его ограничивает вертикальная пилюля (и Лупа под ней), справа — пилюля навигации */
+  html body.pill-shell { padding-top: var(--pl-y-t); padding-bottom: calc(var(--pl-y-b) + var(--pl-m)); }
+  html body.pill-shell .spa, html body.pill-shell footer { padding-left: calc(var(--pl-x-l) + var(--pl-u) + var(--pl-m)); padding-right: calc(var(--pl-x-r) + var(--pl-nav-w) + var(--pl-m)); box-sizing: border-box; }
   html body.pill-shell :is(.section, .hero, .cta) { max-width: none; margin-left: 0; margin-right: 0; }
   html body.pill-shell, html body.pill-shell .spa-view { max-width: none; }          /* раньше body/.spa-view обрезались по 1440px, а пилюли — по краям окна */
   html body.pill-shell :is(.section, .hero) { padding-left: 0; padding-right: 0; }   /* общий край контента = поле 16px у пилюль */
@@ -1446,7 +1451,7 @@ html body.pill-shell :is(.glass-card, .bento-tile, .eco-card, .feat-card, .news-
   -webkit-backdrop-filter: var(--pl-blur); backdrop-filter: var(--pl-blur);
 }
 html body.pill-shell :is(.eco-card, .feat-card, .bento-tile, .cmd-card) { padding: 16px; }
-html body.pill-shell :is(.eco-grid, .feat-grid, .bento-grid) { gap: var(--pl-gap) !important; }
+html body.pill-shell :is(.eco-grid, .feat-grid, .bento, .bento-grid) { gap: var(--pl-gap) !important; }
 html body.pill-shell .section { padding-top: 24px; padding-bottom: 24px; }
 html body.pill-shell .section-lead { margin-bottom: 16px; }
 html body.pill-shell .section h2 { margin-top: 8px; margin-bottom: 8px; }
@@ -1458,18 +1463,19 @@ html body.pill-shell :is(.btn, .aid-btn, .ux-chip, .chip) { -webkit-backdrop-fil
 @media (min-width: 640px) and (orientation: landscape), (min-width: 900px) {
   html body.pill-nav .ux-nav { overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
   html body.pill-nav .ux-nav::-webkit-scrollbar { display: none; }
-    html body.pill-shell .main { max-width: none; box-sizing: border-box; padding-left: var(--pl-x-l); padding-right: calc(var(--pl-x-r) + var(--pl-nav-w) + var(--pl-m)); }
+    html body.pill-shell .main { max-width: none; box-sizing: border-box; padding-left: calc(var(--pl-x-l) + var(--pl-u) + var(--pl-m)); padding-right: calc(var(--pl-x-r) + var(--pl-nav-w) + var(--pl-m)); }
   /* панель уведомлений открывается вниз от верхней пилюли, не за край экрана */
-  html body.pill-nav .bell-panel { right: 0; left: auto; top: calc(100% + var(--pl-gap)); max-width: min(380px, calc(100vw - 2 * var(--pl-m))); }
+  html body.pill-nav .bell-wrap { position: static; }
+  html body.pill-nav .bell-panel { position: fixed; left: calc(var(--pl-x-l) + var(--pl-u) + var(--pl-gap)); right: auto; top: var(--pl-y-t); max-width: min(380px, calc(100vw - 2 * var(--pl-m) - var(--pl-u))); }
 }
 
 /* ---------- Правила идеального выравнивания (общие для всех сайтов с .pill-shell) ---------- */
 /* 1. Сетки заполняют ширину: в альбомной ориентации карточки идут в несколько колонок, а не в одну длинную колонку */
-html body.pill-shell :is(.eco-grid, .feat-grid, .bento-grid, .sites-grid, .digest-grid, .detail-grid, #template-grid, #media-grid, .media-grid) {
+html body.pill-shell :is(.eco-grid, .feat-grid, .bento, .bento-grid, .sites-grid, .digest-grid, .detail-grid, #template-grid, #media-grid, .media-grid) {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)) !important; gap: 8px !important; align-items: stretch; align-content: start;
 }
 /* 2. Карточки одного ряда — одной высоты и с одинаковыми внутренними отступами (16px) */
-html body.pill-shell :is(.eco-grid, .feat-grid, .bento-grid, .sites-grid, .stats-row, .digest-tiles, .digest-grid, .detail-grid, .widgets-row, #template-grid, #media-grid) > * { box-sizing: border-box; height: 100%; min-width: 0; }
+html body.pill-shell :is(.eco-grid, .feat-grid, .bento, .bento-grid, .sites-grid, .stats-row, .digest-tiles, .digest-grid, .detail-grid, .widgets-row, #template-grid, #media-grid) > * { box-sizing: border-box; height: 100%; min-width: 0; }
 html body.pill-shell :is(.site-card, .stat-card, .stat, .widget, .digest-tile, .template-card, .media-card, .detail-card, .settings-card, .glass:not(.modal):not(.bell-panel)) { padding: 16px; border-radius: 24px; }
 /* 3. Плотность: вертикальные отступы между блоками кратны 8/16 */
 html body.pill-shell .view > * + *, html body.pill-shell .stack > * + * { margin-top: 16px; }
